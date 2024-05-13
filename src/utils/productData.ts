@@ -21,10 +21,10 @@ export type Product = {
   id: number;
 };
 
-export const productData = [
+export const productData: Product[] = [
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'SOFAS',
+    u_category: 'FURNITURE',
+    l_category: 'SOFAS',
     brand: 'BOLIA',
     name: 'Cosima 2 Units Big Corner Quattro - White',
     price: '18600000',
@@ -50,8 +50,8 @@ export const productData = [
     id: 1,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'SOFAS',
+    u_category: 'FURNITURE',
+    l_category: 'SOFAS',
     brand: 'THE CONRAN SHOP',
     name: 'Arbor Armchair Wool Bordeaux',
     price: '5500000',
@@ -77,8 +77,8 @@ export const productData = [
     id: 2,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'SOFAS',
+    u_category: 'FURNITURE',
+    l_category: 'SOFAS',
     brand: 'GELDERLAND',
     name: '6401 Woody Armchair',
     price: '1280000',
@@ -104,8 +104,8 @@ export const productData = [
     id: 3,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'SOFAS',
+    u_category: 'FURNITURE',
+    l_category: 'SOFAS',
     brand: 'ESTUDIO PERSONA',
     name: 'Nido Sofa',
     price: '2496000',
@@ -132,8 +132,8 @@ export const productData = [
     id: 4,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'SOFAS',
+    u_category: 'FURNITURE',
+    l_category: 'SOFAS',
     brand: 'CASSINA',
     name: 'LC3',
     price: '7435000',
@@ -159,8 +159,8 @@ export const productData = [
     id: 5,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'SOFAS',
+    u_category: 'FURNITURE',
+    l_category: 'SOFAS',
     brand: 'BOLIA',
     name: 'Angle 2 Modules large - 3colors',
     price: '10720000',
@@ -184,8 +184,8 @@ export const productData = [
     id: 6,
   },
   {
-    u_categoy: 'LIGHTING',
-    l_categoy: 'TABLELAMPS',
+    u_category: 'LIGHTING',
+    l_category: 'TABLELAMPS',
     brand: 'FONTANA ARTE',
     name: 'Fontanatella Medium',
     price: '860000',
@@ -210,8 +210,8 @@ export const productData = [
     id: 7,
   },
   {
-    u_categoy: 'LIGHTING',
-    l_categoy: 'FLOORLAMPS',
+    u_category: 'LIGHTING',
+    l_category: 'FLOORLAMPS',
     brand: 'FLOS',
     name: '[EDITION] Arco K Floor Lamp',
     price: '17820000',
@@ -237,8 +237,8 @@ export const productData = [
     id: 8,
   },
   {
-    u_categoy: 'LIGHTING',
-    l_categoy: 'TABLELAMPS',
+    u_category: 'LIGHTING',
+    l_category: 'TABLELAMPS',
     brand: 'FONTANA ARTE',
     name: 'Tris Table',
     price: '2190000',
@@ -263,8 +263,8 @@ export const productData = [
     id: 9,
   },
   {
-    u_categoy: 'LIGHTING',
-    l_categoy: 'FLOORLAMPS',
+    u_category: 'LIGHTING',
+    l_category: 'FLOORLAMPS',
     brand: 'LOUIS POULSEN',
     name: 'PH 80 Floor - Black',
     price: '2209000',
@@ -290,8 +290,8 @@ export const productData = [
     id: 10,
   },
   {
-    u_categoy: 'LIGHTING',
-    l_categoy: 'FLOORLAMPS',
+    u_category: 'LIGHTING',
+    l_category: 'FLOORLAMPS',
     brand: 'LOUIS POULSEN',
     name: 'PH 3/2 Pendant',
     price: '1585000',
@@ -317,8 +317,8 @@ export const productData = [
     id: 11,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'TABLES',
+    u_category: 'FURNITURE',
+    l_category: 'TABLES',
     brand: 'VITRA',
     name: 'Noguchi Coffee Table - Walnut',
     price: '5120000',
@@ -343,8 +343,8 @@ export const productData = [
     id: 12,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'TABLES',
+    u_category: 'FURNITURE',
+    l_category: 'TABLES',
     brand: 'ClassiCon',
     name: 'Adjustable Table E 1027 - Chrome',
     price: '1520000',
@@ -369,8 +369,8 @@ export const productData = [
     id: 13,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'TABLES',
+    u_category: 'FURNITURE',
+    l_category: 'TABLES',
     brand: 'TECTA',
     name: 'M21-1/M21 Dining, Conference or Executive Desk - Oak Veneer',
     price: '7680000',
@@ -396,8 +396,8 @@ export const productData = [
     id: 14,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'TABLES',
+    u_category: 'FURNITURE',
+    l_category: 'TABLES',
     brand: 'TECTA',
     name: 'Lot Lite Table - White',
     price: '6700000',
@@ -423,8 +423,8 @@ export const productData = [
     id: 15,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'TABLES',
+    u_category: 'FURNITURE',
+    l_category: 'TABLES',
     brand: 'BOLIA',
     name: 'Latch Coffee Table - Smoked Oak',
     price: '4450000',
@@ -450,8 +450,8 @@ export const productData = [
     id: 16,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'STORAGE',
+    u_category: 'FURNITURE',
+    l_category: 'STORAGE',
     brand: 'USM',
     name: 'USM Haller Bed Side Table',
     price: '1857000',
@@ -476,8 +476,8 @@ export const productData = [
     id: 17,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'STORAGE',
+    u_category: 'FURNITURE',
+    l_category: 'STORAGE',
     brand: 'USM',
     name: 'USM Haller Coffee Table',
     price: '3665000',
@@ -501,8 +501,8 @@ export const productData = [
     id: 18,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'CHAIRS',
+    u_category: 'FURNITURE',
+    l_category: 'CHAIRS',
     brand: 'TECTA',
     name: 'B20I Chair - White',
     price: '1750000',
@@ -529,8 +529,8 @@ export const productData = [
     id: 19,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'CHAIRS',
+    u_category: 'FURNITURE',
+    l_category: 'CHAIRS',
     brand: 'NEW WORKS',
     name: 'Bukowski Chair Oak',
     price: '2170000',
@@ -557,8 +557,8 @@ export const productData = [
     id: 20,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'CHAIRS',
+    u_category: 'FURNITURE',
+    l_category: 'CHAIRS',
     brand: 'ZANOTTA',
     name: 'Genni Lounge Chair',
     price: '8440000',
@@ -584,8 +584,8 @@ export const productData = [
     id: 21,
   },
   {
-    u_categoy: 'FURNITURE',
-    l_categoy: 'SHELF',
+    u_category: 'FURNITURE',
+    l_category: 'SHELF',
     brand: 'SPECTRUM',
     name: 'Paperback Wallsystem - White 60cm',
     price: '1460000',
@@ -612,8 +612,8 @@ export const productData = [
     id: 22,
   },
   {
-    u_categoy: 'SOUNDS',
-    l_categoy: 'SPEAKER',
+    u_category: 'SOUNDS',
+    l_category: 'SPEAKER',
     brand: 'BRIONVEGA',
     name: 'RR-226 Radiofonografo White',
     price: '21900000',

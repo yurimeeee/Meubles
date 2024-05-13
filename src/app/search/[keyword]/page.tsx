@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import * as S from '../search.style';
 
 import theme from '@styles/theme';
@@ -18,22 +18,37 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
 
   useEffect(() => {
     if (params) {
-      const tmpData = productData.filter((product) => String(product.name).includes(params.keyword.trim()));
+      const decodedKeyword = decodeURIComponent(params.keyword); // Decode the keyword
+      const lowerCaseKeyword = decodedKeyword.toLowerCase(); // Convert to lowercase
+      const tmpData = productData.filter(
+        (product) =>
+          String(product.name).toLowerCase().includes(lowerCaseKeyword.trim()) ||
+          String(product.brand).toLowerCase().includes(lowerCaseKeyword.trim()) ||
+          String(product.desc).toLowerCase().includes(lowerCaseKeyword.trim())
+      );
       setData(tmpData as any[]);
-      setSearchTerm(params.keyword.trim());
+      setSearchTerm(decodedKeyword.trim());
     }
   }, [params.keyword]);
-  // }, [params.keyword]); // params.keyword가 변경될 때만 실행
 
   console.log(data);
   console.log(searchTerm);
 
   // 검색 form submit 시 작동
-  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const tmpData = productData.filter((product) => String(product.name).includes(params.keyword.trim()));
-    setData(tmpData as any[]);
-  };
+  const handleSearch = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      const filteredData = productData.filter(
+        (product) =>
+          String(product.name.toLowerCase()).includes(searchTerm.trim()) ||
+          String(product.brand.toLowerCase()).includes(searchTerm.trim()) ||
+          String(product?.desc?.toLowerCase()).includes(searchTerm.trim())
+      );
+      setData(filteredData);
+    },
+    [searchTerm]
+  );
+
   return (
     <S.Wrapper>
       <S.SearchWrap>
@@ -57,13 +72,7 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
         <StyledSelect
           onChange={(e) => {
             const newValue = e.target.value;
-            setSelectedOption(newValue);
-
-            // if (newValue === '최신순' && type === 7) {
-            //   setType(6);
-            // } else if (type === 6) {
-            //   setType(7);
-            // }
+            setSelectedOption(newValue.toLowerCase());
           }}
           options={[
             { value: '최신순', label: '최신순' },
