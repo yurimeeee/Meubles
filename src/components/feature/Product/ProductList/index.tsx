@@ -17,40 +17,45 @@ type ProductListProps = {
 const ProductList = ({ categoryListData, uCate }: ProductListProps) => {
   const [category, setCategory] = useState<string>('NEW');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [selectedOption, setSelectedOption] = useState('최신순');
+  const [sortByOption, setSortByOption] = useState('최신순');
 
   useEffect(() => {
-    setFilteredProducts(productData.filter((product) => product.u_categoy === uCate));
+    setFilteredProducts(productData.filter((product) => product.u_category === uCate));
   }, []);
 
   const handleCategoryClick = (clickedCategory: string) => {
     setCategory(clickedCategory);
-    const tmp = productData.filter((product) => product.u_categoy === uCate && product.l_categoy === clickedCategory);
+    const tmp = productData.filter((product) => product.u_category === uCate && product.l_category === clickedCategory);
     setFilteredProducts(tmp);
   };
   const handleALLClick = () => {
-    // setCategory(clickedCategory);
-    // const tmp = productData.filter((product) => product.u_categoy === uCate && product.l_categoy === clickedCategory);
-    setFilteredProducts(productData.filter((product) => product.u_categoy === uCate));
+    setFilteredProducts(productData.filter((product) => product.u_category === uCate));
   };
   const handleNEWClick = () => {
-    // setCategory(clickedCategory);
-    // const tmp = productData.filter((product) => product.u_categoy === uCate && product.l_categoy === clickedCategory);
-    setFilteredProducts(productData.filter((product) => product.u_categoy === uCate && product.new === true));
+    setFilteredProducts(productData.filter((product) => product.u_category === uCate && product.new === true));
   };
+
+  useEffect(() => {
+    if (sortByOption === '최신순' && filteredProducts.length > 0) {
+      const sortedData = [...filteredProducts].sort((a, b) => b.id - a.id);
+      setFilteredProducts(sortedData);
+    }
+    if (sortByOption === '상품명') {
+      const sortedData = [...filteredProducts].sort((a, b) => a.name.localeCompare(b.name));
+      setFilteredProducts(sortedData);
+    }
+    if (sortByOption === '높은가격') {
+      const sortedData = [...filteredProducts].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      setFilteredProducts(sortedData);
+    }
+    if (sortByOption === '낮은가격') {
+      const sortedData = [...filteredProducts].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      setFilteredProducts(sortedData);
+    }
+  }, [sortByOption]);
 
   return (
     <Wrapper>
-      {/* <CategoryList>
-        <CategoryItem onClick={() => handleALLClick()}>ALL</CategoryItem>
-        <CategoryItem onClick={() => handleNEWClick()}>NEW</CategoryItem>
-        {categoryListData?.map((item, idx) => (
-          <CategoryItem key={idx} onClick={() => handleCategoryClick(item)}>
-            {item}
-          </CategoryItem>
-        ))}
-      </CategoryList> */}
-
       <FlexBox $margin="0 0 20px" $justifyContent="space-between">
         <CategoryList>
           <CategoryItem onClick={() => handleALLClick()}>ALL</CategoryItem>
@@ -64,13 +69,7 @@ const ProductList = ({ categoryListData, uCate }: ProductListProps) => {
         <StyledSelect
           onChange={(e) => {
             const newValue = e.target.value;
-            setSelectedOption(newValue);
-
-            // if (newValue === '최신순' && type === 7) {
-            //   setType(6);
-            // } else if (type === 6) {
-            //   setType(7);
-            // }
+            setSortByOption(newValue);
           }}
           options={[
             { value: '최신순', label: '최신순' },
@@ -79,14 +78,14 @@ const ProductList = ({ categoryListData, uCate }: ProductListProps) => {
             { value: '낮은가격', label: '낮은가격' },
           ]}
           // value={'최신순'}
-          value={selectedOption}
+          value={sortByOption}
           width={86}
         />
       </FlexBox>
 
       <ProductWrap>
         {/* {productData
-          .filter((product) => product.u_categoy === 'FURNITURE')
+          .filter((product) => product.u_category === 'FURNITURE')
           .map((item, idx) => (
             <ProductItem key={idx} data={item} />
           ))} */}

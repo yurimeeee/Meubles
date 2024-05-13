@@ -14,25 +14,22 @@ import SearchIcon from '@assets/icons/SearchIcon';
 export default function SearchPage({ params }: { params: { keyword: string } }) {
   const [data, setData] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedOption, setSelectedOption] = useState('최신순');
+  const [sortByOption, setSortByOption] = useState('최신순');
 
   useEffect(() => {
     if (params) {
       const decodedKeyword = decodeURIComponent(params.keyword); // Decode the keyword
       const lowerCaseKeyword = decodedKeyword.toLowerCase(); // Convert to lowercase
-      const tmpData = productData.filter(
+      const filteredData = productData.filter(
         (product) =>
           String(product.name).toLowerCase().includes(lowerCaseKeyword.trim()) ||
           String(product.brand).toLowerCase().includes(lowerCaseKeyword.trim()) ||
           String(product.desc).toLowerCase().includes(lowerCaseKeyword.trim())
       );
-      setData(tmpData as any[]);
+      setData(filteredData);
       setSearchTerm(decodedKeyword.trim());
     }
   }, [params.keyword]);
-
-  console.log(data);
-  console.log(searchTerm);
 
   // 검색 form submit 시 작동
   const handleSearch = useCallback(
@@ -48,6 +45,25 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
     },
     [searchTerm]
   );
+
+  useEffect(() => {
+    if (sortByOption === '최신순') {
+      const sortedData = [...data].sort((a, b) => b.id - a.id);
+      setData(sortedData);
+    }
+    if (sortByOption === '상품명') {
+      const sortedData = [...data].sort((a, b) => a.name.localeCompare(b.name));
+      setData(sortedData);
+    }
+    if (sortByOption === '높은가격') {
+      const sortedData = [...data].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      setData(sortedData);
+    }
+    if (sortByOption === '낮은가격') {
+      const sortedData = [...data].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+      setData(sortedData);
+    }
+  }, [sortByOption]);
 
   return (
     <S.Wrapper>
@@ -72,7 +88,7 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
         <StyledSelect
           onChange={(e) => {
             const newValue = e.target.value;
-            setSelectedOption(newValue.toLowerCase());
+            setSortByOption(newValue.toLowerCase());
           }}
           options={[
             { value: '최신순', label: '최신순' },
@@ -80,7 +96,7 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
             { value: '높은가격', label: '높은가격' },
             { value: '낮은가격', label: '낮은가격' },
           ]}
-          value={selectedOption}
+          value={sortByOption}
           width={86}
         />
       </FlexBox>

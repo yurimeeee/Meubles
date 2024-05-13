@@ -9,29 +9,23 @@ import { MediumFont, RegularFont } from '@components/styled/StyledComponents';
 import { Product } from '@utils/productData';
 import { numberFormatter } from '@utils/formatter';
 
-type ProductItemProps = {
+type ThumbnailItemProps = {
   data: Product;
 };
 
-const ProductItem = ({ data }: ProductItemProps) => {
+const ThumbnailItem = ({ data }: ThumbnailItemProps) => {
   return (
     <Wrapper href={`/product/${data.id}`}>
       <MainImg src={data?.mainImg} alt={data?.name} />
-      <InfoWrap>
-        <Brand>{data?.brand}</Brand>
-        <ProductName>{data?.name}</ProductName>
-        <Price>{numberFormatter(data?.price)}</Price>
-      </InfoWrap>
     </Wrapper>
   );
 };
 
-export default ProductItem;
+export default ThumbnailItem;
 
 const Wrapper = styled(Link)`
   width: 100%;
-  margin: 0 auto;
-  position: relative;
+  max-width: 140px;
   background: ${theme.colors.whiteColor};
   transition: 0.5s;
   overflow: hidden;
@@ -41,25 +35,10 @@ const Wrapper = styled(Link)`
     box-shadow: 0 0 0 1.5px ${theme.colors.grayBorderColor};
   }
 `;
-const InfoWrap = styled.div`
-  position: absolute;
-  left: 10px;
-  bottom: 10px;
-`;
-const Brand = styled(MediumFont)`
-  font-size: 14px;
-  text-decoration: underline;
-`;
-const ProductName = styled(MediumFont)`
-  font-size: 14px;
-  white-space: pre-wrap;
-`;
-const Price = styled(RegularFont)`
-  font-size: 12px;
-`;
 const MainImg = styled.img`
   width: 100%;
   height: 100%;
+  object-fit: cover;
   transition: 0.5s;
 
   &:hover {

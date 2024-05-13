@@ -23,6 +23,7 @@ const BestSeller = () => {
       <ProductList>
         {productData
           .filter((product) => product.best === true)
+          .slice(0, 8)
           .map((item, idx) => (
             <ProductItem key={idx} data={item} />
           ))}

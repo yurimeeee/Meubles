@@ -30,6 +30,7 @@ export const Wrapper = styled.div<{ $height?: string }>`
   height: ${({ $height }) => ($height ? $height : '100%')};
   display: flex;
   justify-content: center;
+  align-items: start;
   /* margin: 32px 0; */
 `;
 export const LoaderBox = styled.div<{ $button?: boolean }>`
@@ -39,7 +40,8 @@ export const LoaderBox = styled.div<{ $button?: boolean }>`
   border-top: 3px solid ${theme.colors.grayFontColor};
   border-radius: 50%;
   animation: ${Spin} 1.3s linear infinite;
-  margin-top: 100px;
+  /* margin-top: 100px; */
+  margin: auto 0;
 
   ${({ $button }) =>
     $button &&
