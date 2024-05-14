@@ -42,15 +42,11 @@ const CartListTable = ({ headers = [], item, quantity, setQuantity, isGroup, onC
           <StyledCheckbox
             checkboxId={item.id}
             checked={checkedList?.find((check) => check.id === item.id)?.checked as boolean}
-            // onChange={() => {
-            //   console.log('checked');
-            // }}
             onChange={() => {
               if (handleCheckboxChange) {
                 handleCheckboxChange(item.id);
               }
             }}
-            // onChange={() => handleCheckboxChange(item.id)}
           />
         </TableText>
       </TableCell>
@@ -62,7 +58,7 @@ const CartListTable = ({ headers = [], item, quantity, setQuantity, isGroup, onC
         }}
         $padding="10px 0"
       >
-        <TableImg src={item.img} />
+        <TableImg src={item.img} alt={item.name} />
         <ItemInfo>
           <Brand>{item.brand}</Brand>
           <ProductName>{item.name}</ProductName>

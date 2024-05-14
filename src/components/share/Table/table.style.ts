@@ -89,7 +89,6 @@ export const TableImg = styled.img`
   margin-right: 16px;
 `;
 export const ItemInfo = styled.div`
-
 `;
 
 export const Brand = styled(MediumFont)`

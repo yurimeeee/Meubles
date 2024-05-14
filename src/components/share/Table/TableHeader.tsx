@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import theme from '@styles/theme';
 import styled from 'styled-components';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
@@ -11,15 +11,16 @@ export type HeaderType = {
 
 type TableRowProps = {
   headers: HeaderType[];
-  checkAllItems?: () => void;
-  allItemsChecked?: boolean;
+  // checkAllItems?: () => void;
+  checkAllItems?: (e: ChangeEvent<HTMLInputElement>) => void;
+  allItemsChecked: boolean;
 };
 
 const TableHeader = ({ headers = [], checkAllItems, allItemsChecked }: TableRowProps) => {
   return (
     <Wrapper>
       <TableCell $minWidth={45} $width={3}>
-        <StyledCheckbox checkboxId="1" checked={allItemsChecked} onChange={checkAllItems} />
+        <StyledCheckbox checked={allItemsChecked} onChange={checkAllItems} />
       </TableCell>
       {headers.slice(1).map((header: HeaderType, index: number) => {
         return (
@@ -42,10 +43,19 @@ const Wrapper = styled.div`
   border-bottom: 1px solid ${theme.colors.blackColor};
   width: 100%;
   max-width: 1280px;
-  min-width: 1080px;
+
+  /* min-width: 1080px; */
 `;
+// const TableCell = styled.div<{ $minWidth?: number; $width: number; $fontColor?: string }>`
+//   min-width: ${({ $minWidth }) => $minWidth}px;
+//   flex: ${({ $minWidth }) => ($minWidth ? 0 : 1)};
+//   width: ${({ $width }) => $width}%;
+//   text-align: center;
+//   font-family: 'AppleSDGothicNeoRegular';
+//   color: ${({ $fontColor }) => ($fontColor ? $fontColor : theme.colors.blackColor)};
+// `;
 const TableCell = styled.div<{ $minWidth?: number; $width: number; $fontColor?: string }>`
-  min-width: ${({ $minWidth }) => $minWidth}px;
+  min-width: ${({ $minWidth }) => ($minWidth ? `${$minWidth}%` : 0)};
   flex: ${({ $minWidth }) => ($minWidth ? 0 : 1)};
   width: ${({ $width }) => $width}%;
   text-align: center;
