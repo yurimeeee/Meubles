@@ -11,11 +11,13 @@ import { numberFormatter } from '@utils/formatter';
 
 type ThumbnailItemProps = {
   data: Product;
+  onClick?: () => void;
+  maxWidth?: number;
 };
 
-const ThumbnailItem = ({ data }: ThumbnailItemProps) => {
+const ThumbnailItem = ({ data, onClick, maxWidth }: ThumbnailItemProps) => {
   return (
-    <Wrapper href={`/product/${data.id}`}>
+    <Wrapper href={`/product/${data.id}`} onClick={onClick} $maxWidth={maxWidth}>
       <MainImg src={data?.mainImg} alt={data?.name} />
     </Wrapper>
   );
@@ -23,9 +25,9 @@ const ThumbnailItem = ({ data }: ThumbnailItemProps) => {
 
 export default ThumbnailItem;
 
-const Wrapper = styled(Link)`
+const Wrapper = styled(Link)<{ $maxWidth?: number }>`
   width: 100%;
-  max-width: 140px;
+  max-width: ${({ $maxWidth }) => ($maxWidth ? `${$maxWidth}px` : '140px')};
   background: ${theme.colors.whiteColor};
   transition: 0.5s;
   overflow: hidden;

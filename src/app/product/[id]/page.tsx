@@ -27,12 +27,13 @@ import { auth, db } from '@lib/firebase';
 import Modal from '@components/share/Modal';
 import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { MainImg } from '../../(mypage)/mypage.style';
+import BlankLoader from '@components/share/BlankLoader';
 
 const ProductDetailPage = ({ params }: { params: { id: string } }) => {
   const [data, setData] = useState<Product>();
   const [mainImg, setMainImg] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
-  const [expanded, setExpanded] = useState<string | false>('panel1');
+  const [expanded, setExpanded] = useState<string | false>('');
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [exist, setExist] = useState<boolean>(false);
 
@@ -50,7 +51,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
   const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
     setExpanded(newExpanded ? panel : false);
   };
-
+  console.log('data', data);
   // 장바구니 담기
   // const onClickAddToCart = useCallback(async () => {
   //   const { id, brand, name, price, mainImg } = data;
@@ -180,13 +181,35 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
   return (
     <P.Wrapper>
       <P.Info>
+        {data === undefined && (
+          <>
+            <P.Brand>
+              <BlankLoader width="180px" height="22px" />
+            </P.Brand>
+            <P.Name>
+              <BlankLoader width="430px" height="36px" />
+            </P.Name>
+            <P.Price>
+              <BlankLoader width="200px" height="28px" />
+            </P.Price>
+          </>
+        )}
         <P.Brand>{data?.brand}</P.Brand>
         <P.Name>{data?.name}</P.Name>
         <P.Price>{numberFormatter(data?.price)}</P.Price>
         <QuantitySelect quantity={quantity} setQuantity={setQuantity} />
-        <P.TotalPrice>
+        {data === undefined ? (
+          <P.TotalPrice>
+            <BlankLoader width="250px" height="28px" />
+          </P.TotalPrice>
+        ) : (
+          <P.TotalPrice>
+            TOTAL : KRW {numberFormatter(Number(data?.price) * quantity)} ({quantity} {quantity === 1 ? 'piece' : 'pieces'})
+          </P.TotalPrice>
+        )}
+        {/* <P.TotalPrice>
           TOTAL : KRW {numberFormatter(Number(data?.price) * quantity)} ({quantity} {quantity === 1 ? 'piece' : 'pieces'})
-        </P.TotalPrice>
+        </P.TotalPrice> */}
         <FlexBox $gap="16px" $margin="0 0 56px">
           <StyledButton title="ADD TO CART" onClick={onClickAddToCart} fontSize={18} bgColor={theme.colors.blackColor} fontColor={theme.colors.whiteColor} />
           <HeartIcon />
@@ -277,10 +300,18 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
         </P.AccordionWrap>
         {/* Accordion */}
       </P.Info>
-      <FlexBox $flexDirection="column" $gap="10px">
-        <P.MainWrap>
-          <P.MainImg src={mainImg} alt={data?.name} />
-        </P.MainWrap>
+      <P.ImgBox>
+        {/* <FlexBox $flexDirection="column" $gap="10px"> */}
+        <P.MainWrap>{data === undefined ? <BlankLoader /> : <P.MainImg src={mainImg} alt={data?.name} />}</P.MainWrap>
+
+        {/* {data === undefined && (
+          <P.SubImgList>
+            {[...Array(4)].map((_, index) => (
+              <BlankLoader key={index} width="117px" height="117px" />
+            ))}
+          </P.SubImgList>
+        )}
+
         {data?.subImg && data?.subImg.length > 4 ? (
           <P.SubImgList>
             <Swiper spaceBetween={10} slidesPerView={3}>
@@ -309,19 +340,9 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
               />
             ))}
           </P.SubImgList>
-        )}
-        {/* <P.SubImgList>
-          {data?.subImg.map((sub, idx) => (
-            <P.SubImg
-              src={sub}
-              key={idx}
-              onClick={() => {
-                setMainImg(sub);
-              }}
-            />
-          ))}
-        </P.SubImgList> */}
-      </FlexBox>
+        )} */}
+        {/* </FlexBox> */}
+      </P.ImgBox>
     </P.Wrapper>
   );
 };

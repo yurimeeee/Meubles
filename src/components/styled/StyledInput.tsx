@@ -158,6 +158,7 @@ const Input = styled.input<{
   /* background-color: ${({ $readOnly, $disabled }) => ($readOnly || $disabled ? '#f2f2f2' : theme.colors.whiteColor)}; */
   color: ${({ $readOnly, $disabled }) => ($readOnly || $disabled ? theme.colors.deepGrayFontColor : theme.colors.blackColor)};
   position: ${({ type }) => (type === 'file' ? 'absolute' : 'static')};
+  border-radius: 0 !important;
 
   transition: 0.3s;
 

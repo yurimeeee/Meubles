@@ -38,17 +38,34 @@ const Wrapper = styled.section`
   width: 100%;
   max-width: 1660px;
   margin: 0 auto 100px;
+  padding: 0 20px;
+
+  ${theme.devices.desktop} {
+    padding: 0;
+  }
 `;
 const Title = styled(MediumFont)`
   ${theme.typography.h3}
   font-family: "BaskervilleRegular";
   margin-bottom: 8px;
   text-align: center;
+
+  ${theme.typography.h4}
+  margin-bottom: 4px;
+
+  ${theme.devices.mobile} {
+    ${theme.typography.h4}
+  }
 `;
 const SubTitle = styled(RegularFont)`
   ${theme.typography.body};
   margin-bottom: 60px;
   text-align: center;
+
+  ${theme.devices.mobile} {
+    margin-bottom: 32px;
+    font-size: 14px;
+  }
 `;
 const ProductList = styled.div`
   display: grid;
@@ -65,4 +82,8 @@ const MoreView = styled(Link)`
   justify-content: end;
   color: ${theme.colors.grayFontColor};
   margin-bottom: 16px;
+
+  ${theme.devices.mobile} {
+    font-size: 13px;
+  }
 `;

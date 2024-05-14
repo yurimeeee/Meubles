@@ -10,27 +10,37 @@ export const Wrapper = styled.div`
   min-height: 1000px;
   padding-top: 100px;
   margin:  0 auto;
+
+  /* ${theme.devices.tablet}{
+    flex-direction: column;
+    align-items: center;
+  } */
 `;
 export const Info = styled.div`
-  padding-left: 72px;
+  padding-left: 92px;
+`;
+export const ImgBox = styled.div`
+  width: 100%;
+  max-width: 500px;
 `;
 export const MainWrap = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 500px;
-  min-height: 500px;
+  /* max-width: 500px; */
+  /* min-height: 500px; */
   background: ${theme.colors.whiteColor};
 `;
 export const MainImg = styled.img`
   width: 100%;
-  max-width: 500px;
-  max-height: 500px;
+  /* max-width: 500px; */
+  aspect-ratio: 1/1;
+  /* max-height: 500px; */
   object-fit: cover;
 `;
 export const SubImgList = styled.div`
   width: 100%;
-  max-width: 500px;
+  /* max-width: 500px; */
   display: flex;
   gap:10px;
 

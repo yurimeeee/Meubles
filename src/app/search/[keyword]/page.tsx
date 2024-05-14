@@ -10,14 +10,16 @@ import ProductItem from '@components/share/ProductItem';
 import StyledSelect from '@components/styled/StyledSelect';
 
 import SearchIcon from '@assets/icons/SearchIcon';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 export default function SearchPage({ params }: { params: { keyword: string } }) {
   const [data, setData] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortByOption, setSortByOption] = useState('최신순');
 
+  // params로 넘어온 키워드로 검색 및 정렬
   useEffect(() => {
-    if (params) {
+    if (params.keyword) {
       const decodedKeyword = decodeURIComponent(params.keyword); // Decode the keyword
       const lowerCaseKeyword = decodedKeyword.toLowerCase(); // Convert to lowercase
       const filteredData = productData.filter(
@@ -26,10 +28,23 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
           String(product.brand).toLowerCase().includes(lowerCaseKeyword.trim()) ||
           String(product.desc).toLowerCase().includes(lowerCaseKeyword.trim())
       );
-      setData(filteredData);
+
+      let sortedData = [...filteredData]; // filteredData 복사하여 새로운 배열 생성
+
+      if (sortByOption === '최신순') {
+        sortedData.sort((a, b) => b.id - a.id); // 최신순으로 정렬
+      } else if (sortByOption === '상품명') {
+        sortedData.sort((a, b) => a.name.localeCompare(b.name)); // 상품명으로 정렬
+      } else if (sortByOption === '높은가격') {
+        sortedData.sort((a, b) => parseFloat(b.price) - parseFloat(a.price)); // 높은 가격순으로 정렬
+      } else if (sortByOption === '낮은가격') {
+        sortedData.sort((a, b) => parseFloat(a.price) - parseFloat(b.price)); // 낮은 가격순으로 정렬
+      }
+
+      setData(sortedData); // sortedData를 data로 업데이트
       setSearchTerm(decodedKeyword.trim());
     }
-  }, [params.keyword]);
+  }, [params.keyword, sortByOption]);
 
   // 검색 form submit 시 작동
   const handleSearch = useCallback(
@@ -46,25 +61,6 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
     [searchTerm]
   );
 
-  useEffect(() => {
-    if (sortByOption === '최신순') {
-      const sortedData = [...data].sort((a, b) => b.id - a.id);
-      setData(sortedData);
-    }
-    if (sortByOption === '상품명') {
-      const sortedData = [...data].sort((a, b) => a.name.localeCompare(b.name));
-      setData(sortedData);
-    }
-    if (sortByOption === '높은가격') {
-      const sortedData = [...data].sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-      setData(sortedData);
-    }
-    if (sortByOption === '낮은가격') {
-      const sortedData = [...data].sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-      setData(sortedData);
-    }
-  }, [sortByOption]);
-
   return (
     <S.Wrapper>
       <S.SearchWrap>
@@ -73,17 +69,16 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
           <S.Form onSubmit={handleSearch}>
             <S.Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             {/* <button> */}
-            <SearchIcon />
+            {/* <SearchIcon /> */}
+            {searchTerm === '' ? <SearchIcon /> : <AiOutlineCloseCircle size={24} onClick={() => setSearchTerm('')} />}
             {/* </button> */}
           </S.Form>
         </S.SearchInput>
       </S.SearchWrap>
-      <FlexBox $margin="0 0 20px">
+      <S.FlexBox>
         <FlexBox $gap="10px">
-          <RegularFont $fontSize={16} $fontColor={theme.colors.darkGrayFontColor}>
-            상품 검색 결과
-          </RegularFont>
-          <SemiBoldFont>{data?.length}</SemiBoldFont>
+          <S.ResultText>상품 검색 결과</S.ResultText>
+          <S.ResultNumber>{data?.length}</S.ResultNumber>
         </FlexBox>
         <StyledSelect
           onChange={(e) => {
@@ -99,7 +94,7 @@ export default function SearchPage({ params }: { params: { keyword: string } }) 
           value={sortByOption}
           width={86}
         />
-      </FlexBox>
+      </S.FlexBox>
       <S.ProductWrap>{data.length > 0 ? data.map((item, index) => <ProductItem data={item} key={index} />) : <NoResults>검색 결과가 없습니다.</NoResults>}</S.ProductWrap>
     </S.Wrapper>
   );

@@ -1,15 +1,23 @@
 "use client";
 
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import theme from "@styles/theme";
-import { BoldFont } from "@components/styled/StyledComponents";
+import { BoldFont, RegularFont, SemiBoldFont } from "@components/styled/StyledComponents";
 
 
 export const Wrapper = styled.main`
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 60px 0;
+  padding: 60px 20px;
+
+  ${theme.devices.desktop} {
+    padding: 60px 0;
+  } 
+
+  ${theme.devices.mobile} {
+    padding: 30px 20px;
+  } 
 `;
 export const SearchWrap = styled.div`
   display: flex;
@@ -48,4 +56,31 @@ export const Form = styled.form`
 `;
 export const Input = styled.input`
   width: 100%;
+`;
+export const FlexBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  ${theme.devices.mobile} {
+    margin-bottom: 4px;
+  }
+`;
+export const ResultText = styled(RegularFont)`
+  ${theme.typography.body}
+  color: ${theme.colors.deepGrayFontColor} !important;
+
+  ${theme.devices.mobile} {
+    font-size: 14px;
+  }
+`;
+export const ResultNumber = styled(SemiBoldFont)`
+  ${theme.typography.body}
+  /* color: ${theme.colors.grayFontColor} !important; */
+
+  ${theme.devices.mobile} {
+    font-size: 14px;
+    line-height: 1.4;
+  }
 `;

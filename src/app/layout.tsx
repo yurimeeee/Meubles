@@ -1,7 +1,13 @@
 import type { Metadata } from 'next';
 import { Baskervville } from 'next/font/google';
+
 import StyledComponentsRegistry from '@lib/StyledComponentsRegistry';
+import RecoilRootWrapper from '@recoil/RecoilRootWrapper';
+
 import Header from '@components/layout/Header';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { StyledToastContainer } from '@lib/StyledToastContainer';
 
 // const baskervville = Baskervville({ subsets: [''] });÷
 
@@ -18,10 +24,14 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <StyledComponentsRegistry>
-          <Header />
-          {children}
-        </StyledComponentsRegistry>
+        <RecoilRootWrapper>
+          <StyledComponentsRegistry>
+            <Header />
+            {children}
+            <StyledToastContainer />
+            {/* <ToastContainer /> */}
+          </StyledComponentsRegistry>
+        </RecoilRootWrapper>
       </body>
     </html>
   );

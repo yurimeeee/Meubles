@@ -17,7 +17,7 @@ type QuantitySelectProps = {
   buttonSize?: number;
   fontSize?: number;
   margin?: string;
-  onChangeQuantity: (selectId: number, newQuantity: number) => void;
+  onChangeQuantity?: (selectId: number, newQuantity: number) => void;
   selectId?: number;
   isGroup?: boolean;
 };

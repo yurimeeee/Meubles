@@ -12,6 +12,11 @@ export const Wrapper = styled.main`
   max-width: 500px;
   margin: 0 auto;
   padding-top: 100px;
+
+${theme.devices.mobile} {
+  padding: 60px 20px 0;
+  max-width: calc(100vh - 40px);
+}
 `;
 export const Form = styled.div`
   display: flex;
@@ -25,8 +30,6 @@ export const InputWrap = styled.div`
   align-items: center;
   width: 100%;
   border-bottom: 1px solid ${theme.colors.blackColor};
-
-
 `;
 export const Terms = styled.div`
   display: flex;

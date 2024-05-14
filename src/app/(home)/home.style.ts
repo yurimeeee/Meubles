@@ -15,10 +15,14 @@ export const MainImg = styled.div`
   width: 100%;
   /* min-width: 320px; */
   max-width: 1280px;
-  height: 600px;
+  height: 500px;
   position: relative;
   overflow: hidden;
   margin: 80px auto 160px;
+
+  ${theme.devices.desktop}{
+    height: 600px;
+  }
 
 &::after {
   content: '';

@@ -55,24 +55,28 @@ const colors = {
   grayBorderColor: "#D0D0D0",
 
   // Icon
-  grayIconColor: "#AAAAAA",
+  grayIconColor: "#A3A3A3",
 
   // Background
   lightGrayBgColor: "#F4F4F4",
   greyBgColor: "#DEDCDA",
   wramGreyBgColor: "#C9C5BE",
+  loadingBgColor: "#ECECEC",
 };
 
 const deviceSizes = {
   mobile: 320,
   tablet: 720,
-  desktop: 1080,
+  notebook: 1080,
+  desktop: 1280,
 };
 const devices = {
   mobile: `@media screen and (max-width: ${deviceSizes.tablet - 1}px)`,
-  tablet: `@media screen and (min-width: ${deviceSizes.tablet}px) and (max-width: ${deviceSizes.desktop}px)`,
+  tablet: `@media screen and (min-width: ${deviceSizes.tablet}px) and (max-width: ${deviceSizes.notebook - 1}px)`,
+  notebook: `@media screen and (min-width: ${deviceSizes.notebook}px) and (max-width: ${deviceSizes.desktop - 1}px)`,
   desktop: `@media screen and (min-width: ${deviceSizes.desktop}px)`,
 };
+
 
 const theme: DefaultTheme = {
   colors,

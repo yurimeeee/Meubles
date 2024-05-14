@@ -2,6 +2,7 @@
 
 import styled from "styled-components";
 import Link from "next/link";
+import theme from "@styles/theme";
 
 export const Wrapper = styled.main`
   display: flex;
@@ -10,7 +11,12 @@ export const Wrapper = styled.main`
   align-items: center;
   max-width: 350px;
   margin: 0 auto;
-  padding-top: 200px;
+  padding: 200px 0 0;
+
+  ${theme.devices.mobile}{
+    padding: 120px 20 0;
+  }
+  
 `;
 export const Form = styled.div`
   display: flex;

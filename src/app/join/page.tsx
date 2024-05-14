@@ -57,6 +57,26 @@ export default function Join() {
   );
 
   // 각 체크박스 항목 클릭 시 termsList 업데이트
+  const dddddd = useCallback(async () => {
+    // const { data } = await auth.fetchSignInMethodsForEmail(email);
+    // if (data && data.length > 0) {
+    //   alert('이미 사용 중인 이메일입니다.');
+    //   return;
+    // }
+    // const dbRef = ref(getDatabase());
+    // get(child(dbRef, `users/${userId}`))
+    //   .then((snapshot) => {
+    //     if (snapshot.exists()) {
+    //       console.log(snapshot.val());
+    //     } else {
+    //       console.log('No data available');
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
+  }, [inputs.email]);
+  // 각 체크박스 항목 클릭 시 termsList 업데이트
   const handleTermsChecked = useCallback(
     (detail: keyof TermsList) => () => {
       setTermsList((prev) => ({
@@ -133,6 +153,7 @@ export default function Join() {
 
         // Add a document to the 'users' collection with the user's details
         await setDoc(doc(usersCollection, uid), {
+          email,
           name,
           address,
           addressDetail,
@@ -159,7 +180,7 @@ export default function Join() {
           <StyledButton
             title="중복 검사"
             fontSize={12}
-            width={88}
+            width={94}
             height={30}
             bgColor={theme.colors.lightGrayBgColor}
             fontColor={theme.colors.blackColor}
@@ -182,7 +203,7 @@ export default function Join() {
             onClick={handleModalOpen}
             title="주소 검색"
             fontSize={12}
-            width={88}
+            width={94}
             height={30}
             bgColor={theme.colors.lightGrayBgColor}
             fontColor={theme.colors.blackColor}

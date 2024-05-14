@@ -18,10 +18,6 @@ const NewProduct = () => {
     <Wrapper>
       <Title>New Product</Title>
       <SubTitle>새롭게 입고된 신상품을 만나보세요</SubTitle>
-      <MoreView href={'/'}>
-        MORE VIEWS
-        <ArrowIcon />
-      </MoreView>
 
       <Contents>
         <KeywordList>
@@ -38,6 +34,11 @@ const NewProduct = () => {
             # Sculptural
           </Keyword>
         </KeywordList>
+        <MoreView href={'/'}>
+          MORE VIEWS
+          <ArrowIcon />
+        </MoreView>
+
         <ProductList>
           {productData
             .filter((product) => product.keyword === keyword)
@@ -57,26 +58,41 @@ const Wrapper = styled.section`
   width: 100%;
   max-width: 1280px;
   margin: 0 auto 100px;
+  padding: 0 20px;
+
+  ${theme.devices.desktop} {
+    padding: 0;
+  }
 `;
 const Title = styled(MediumFont)`
   ${theme.typography.h3}
   font-family: "BaskervilleRegular";
   margin-bottom: 8px;
   text-align: center;
+
+  ${theme.devices.mobile} {
+    ${theme.typography.h4}
+    margin-bottom: 4px;
+  }
 `;
 const SubTitle = styled(RegularFont)`
   ${theme.typography.body};
   margin-bottom: 60px;
   text-align: center;
+
+  ${theme.devices.mobile} {
+    margin-bottom: 32px;
+    font-size: 14px;
+  }
 `;
 const ProductList = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  max-width: 1024px;
+  max-width: 1280px;
 
-  ${theme.devices.desktop} {
-    grid-template-columns: repeat(3, 1fr);
+  ${theme.devices.mobile} {
+    grid-template-columns: repeat(2, 1fr);
   }
 `;
 const MoreView = styled(Link)`
@@ -84,28 +100,50 @@ const MoreView = styled(Link)`
   gap: 10px;
   justify-content: end;
   color: ${theme.colors.grayFontColor};
-  margin-bottom: 16px;
+  margin: 24px 0 16px;
+
+  ${theme.devices.mobile} {
+    font-size: 13px;
+  }
 `;
 const Contents = styled.div`
+  /* width: 100%;
+  max-width: calc(100vh - 40px); */
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 `;
 const KeywordList = styled.ul`
   display: flex;
-  flex-direction: column;
-  justify-content: end;
-  gap: 20px;
+  justify-content: center;
+  gap: 10px;
+
+  ${theme.devices.mobile} {
+    width: 100%;
+    max-width: calc(100vh - 40px);
+    gap: 8px;
+  }
 `;
 const Keyword = styled.li<{ $active: boolean }>`
-  width: 200px;
-  height: 55px;
+  height: 45px;
   display: flex;
   align-items: center;
-  ${theme.typography.h7};
-  /* background: ${theme.colors.greyBgColor}; */
-  background: ${({ $active }) => ($active ? theme.colors.wramGreyBgColor : theme.colors.greyBgColor)};
-  font-weight: ${({ $active }) => ($active ? '500' : '400')};
   padding: 0 16px;
+  ${theme.typography.h7}
+  white-space: nowrap;
+  /* background: ${({ $active }) => ($active ? theme.colors.greyBgColor : theme.colors.lightGrayBgColor)};
+  box-shadow: ${({ $active }) => ($active ? 'none' : `inset 0 0 0 1.5px ${theme.colors.greyBgColor}`)}; */
+  background: ${({ $active }) => ($active ? theme.colors.lightGrayBgColor : theme.colors.greyBgColor)};
+  box-shadow: ${({ $active }) => ($active ? `inset 0 0 0 1.5px ${theme.colors.greyBgColor}` : 'none')};
+  color: ${({ $active }) => ($active ? theme.colors.blackColor : theme.colors.deepGrayFontColor)};
+  font-weight: ${({ $active }) => ($active ? '500' : '400')};
   transition: background 0.4s;
   cursor: pointer;
+
+  ${theme.devices.mobile} {
+    padding: 0 10px;
+    height: 40px;
+    flex: 1;
+    font-size: 12px;
+  }
 `;

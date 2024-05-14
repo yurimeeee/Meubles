@@ -1,30 +1,35 @@
 import React from 'react';
-import styled, { css, keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import theme from '@styles/theme';
 
 type BlankLoaderProps = {
-  width?: string;
-  height?: string;
+  width?: number;
+  height?: number;
+  mobileWidth?: number;
+  mobileHeight?: number;
 };
 
-const BlankLoader = ({ width, height }: BlankLoaderProps) => {
+const BlankLoader = ({ width, height, mobileWidth, mobileHeight }: BlankLoaderProps) => {
   return (
-    <Wrapper $height={height} $width={width}>
-      <Loader />
+    <Wrapper $height={height} $width={width} $mobileHeight={mobileHeight} $mobileWidth={mobileWidth}>
+      <Loader $width={width} $mobileWidth={mobileWidth} />
     </Wrapper>
   );
 };
 
 export default BlankLoader;
 
-export const Wrapper = styled.div<{ $height?: string; $width?: string }>`
-  width: ${({ $width }) => ($width ? $width : '100%')};
-  /* height: ${({ $height }) => ($height ? $height : '100%')}; */
+export const Wrapper = styled.div<{ $height?: number; $width?: number; $mobileWidth?: number; $mobileHeight?: number }>`
+  width: ${({ $width }) => ($width ? `${$width}px` : '100%')};
+  height: ${({ $height }) => ($height ? `${$height}px` : '100%')};
   aspect-ratio: 1/1;
   display: flex;
   justify-content: center;
   align-items: start;
-  margin: 22px 0;
+
+  ${theme.devices.mobile} {
+    width: ${({ $mobileWidth }) => ($mobileWidth ? `${$mobileWidth}px` : '100%')};
+  }
 `;
 
 export const blinkAnimation = keyframes`
@@ -36,40 +41,15 @@ export const blinkAnimation = keyframes`
   }
 `;
 
-export const Loader = styled.div<{ $minWidth?: number }>`
+export const Loader = styled.div<{ $width?: number; $mobileWidth?: number }>`
   width: 100%;
-  /* min-width: ${({ $minWidth }) => $minWidth}px; */
+  min-width: ${({ $width }) => $width}px;
   height: 100%;
-  background: ${theme.colors.lightGrayBgColor};
+  background: ${theme.colors.loadingBgColor};
   border-radius: 6px;
   animation: ${blinkAnimation} 1s infinite;
+
+  ${theme.devices.mobile} {
+    min-width: ${({ $mobileWidth }) => $mobileWidth}px;
+  }
 `;
-
-// export const Spin = keyframes`
-//   0% {
-//     transform: rotate(0deg);
-//   }
-//   100% {
-//     transform: rotate(360deg);
-//   }
-// `;
-
-// export const LoaderBox = styled.div<{ $button?: boolean }>`
-//   width: 50px;
-//   height: 50px;
-//   border: 3px solid ${theme.colors.grayIconColor};
-//   border-top: 3px solid ${theme.colors.grayFontColor};
-//   border-radius: 50%;
-//   animation: ${Spin} 1.3s linear infinite;
-//   /* margin-top: 100px; */
-//   margin: auto 0;
-
-//   ${({ $button }) =>
-//     $button &&
-//     css`
-//       width: 28px;
-//       height: 28px;
-//       border-width: 3px;
-//       margin-top: 10px;
-//     `};
-// `;

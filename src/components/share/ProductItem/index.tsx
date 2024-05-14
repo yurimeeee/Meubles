@@ -49,13 +49,25 @@ const InfoWrap = styled.div`
 const Brand = styled(MediumFont)`
   font-size: 14px;
   text-decoration: underline;
+
+  ${theme.devices.mobile} {
+    font-size: 12px;
+  }
 `;
 const ProductName = styled(MediumFont)`
   font-size: 14px;
   white-space: pre-wrap;
+
+  ${theme.devices.mobile} {
+    font-size: 12px;
+  }
 `;
 const Price = styled(RegularFont)`
   font-size: 12px;
+
+  ${theme.devices.mobile} {
+    font-size: 11px;
+  }
 `;
 const MainImg = styled.img`
   width: 100%;
