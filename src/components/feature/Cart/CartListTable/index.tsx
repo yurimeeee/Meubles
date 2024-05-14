@@ -19,16 +19,21 @@ type CartListTableProps = {
   item?: any;
   quantity: number;
   setQuantity: Dispatch<SetStateAction<number>>;
-  onChangeQuantity: (selectId: number, newQuantity: number) => void;
+  onChangeQuantity?: (selectId: number, newQuantity: number) => void;
   selectId?: number;
   isGroup?: boolean;
-  handleChecked?: (detail: number) => () => void;
+  handleCheckboxChange?: (id: number) => void;
+  checkedList?: { id: number; checked: boolean }[];
 };
 
-const CartListTable = ({ headers = [], item, quantity, setQuantity, isGroup, onChangeQuantity, selectId, handleChecked }: CartListTableProps) => {
+const CartListTable = ({ headers = [], item, quantity, setQuantity, isGroup, onChangeQuantity, selectId, handleCheckboxChange, checkedList }: CartListTableProps) => {
   const router = useRouter();
 
-  // `/product/${data.id}`
+  // const item = checkedList.find((item) => item.id === id);
+  // if (item) {
+  //   const isChecked = item.checked;
+  //   // isChecked에 해당 객체의 checked 값을 사용할 수 있습니다.
+  // }
 
   return (
     <TableRow $height={120} $disabled={item?.lrs_status === 'complete' || item?.lrs_status === 'reject' || item?.lrs_status === 'cancel'}>
@@ -36,15 +41,16 @@ const CartListTable = ({ headers = [], item, quantity, setQuantity, isGroup, onC
         <TableText>
           <StyledCheckbox
             checkboxId={item.id}
-            checked={false}
+            checked={checkedList?.find((check) => check.id === item.id)?.checked as boolean}
             // onChange={() => {
             //   console.log('checked');
             // }}
             onChange={() => {
-              if (handleChecked) {
-                handleChecked(item.id);
+              if (handleCheckboxChange) {
+                handleCheckboxChange(item.id);
               }
             }}
+            // onChange={() => handleCheckboxChange(item.id)}
           />
         </TableText>
       </TableCell>

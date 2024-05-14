@@ -13,7 +13,8 @@ interface StyledCheckboxProps {
   borderColor?: string;
   bgColor?: string;
   fontColor?: string;
-  checked: boolean;
+  // checked: boolean;
+  checked: boolean | undefined;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 

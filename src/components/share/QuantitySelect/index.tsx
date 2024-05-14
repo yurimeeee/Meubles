@@ -28,11 +28,11 @@ const QuantitySelect = ({ quantity, setQuantity, buttonSize, fontSize, margin, o
       <Button
         $buttonSize={buttonSize}
         onClick={() => {
-          if (onChangeQuantity) {
-            onChangeQuantity(selectId as number, quantity - 1);
-          } else {
-            setQuantity(quantity - 1);
-          }
+          // if (onChangeQuantity) {
+          //   onChangeQuantity(selectId as number, quantity - 1);
+          // } else {
+          setQuantity(quantity - 1);
+          // }
         }}
       >
         <MinusIcon />
@@ -43,11 +43,11 @@ const QuantitySelect = ({ quantity, setQuantity, buttonSize, fontSize, margin, o
       <Button
         $buttonSize={buttonSize}
         onClick={() => {
-          if (onChangeQuantity) {
-            onChangeQuantity(selectId as number, quantity + 1);
-          } else {
-            setQuantity(quantity + 1);
-          }
+          // if (onChangeQuantity) {
+          //   onChangeQuantity(selectId as number, quantity + 1);
+          // } else {
+          setQuantity(quantity + 1);
+          // }
         }}
       >
         <PlusIcon />

@@ -11,19 +11,15 @@ export type HeaderType = {
 
 type TableRowProps = {
   headers: HeaderType[];
+  checkAllItems?: () => void;
+  allItemsChecked?: boolean;
 };
 
-const TableHeader = ({ headers = [] }: TableRowProps) => {
+const TableHeader = ({ headers = [], checkAllItems, allItemsChecked }: TableRowProps) => {
   return (
     <Wrapper>
       <TableCell $minWidth={45} $width={3}>
-        <StyledCheckbox
-          checkboxId="1"
-          checked={false}
-          onChange={() => {
-            console.log('checked');
-          }}
-        />
+        <StyledCheckbox checkboxId="1" checked={allItemsChecked} onChange={checkAllItems} />
       </TableCell>
       {headers.slice(1).map((header: HeaderType, index: number) => {
         return (

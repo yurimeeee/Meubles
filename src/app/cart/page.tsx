@@ -3,7 +3,7 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword, Unsubscribe } from 'firebase/auth';
-import { collection, doc, onSnapshot, query, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, onSnapshot, query, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@lib/firebase';
 import { toast } from 'react-toastify';
 
@@ -38,7 +38,7 @@ const Header = [
 
 export default function CartPage() {
   const router = useRouter();
-  const [allTermsChecked, setAllTermsChecked] = useState<boolean>(false);
+  const [allItemsChecked, setAllItemsChecked] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<any>();
   const [inputs, setInputs] = useState({
     email: '',
@@ -75,7 +75,7 @@ export default function CartPage() {
             price,
             quantity,
             img,
-            userId: doc.id,
+            docId: doc.id,
           };
         });
         setCartItem(tweets);
@@ -103,6 +103,7 @@ export default function CartPage() {
 
   console.log('cartItem', cartItem);
   console.log('quantity:::', quantity);
+  console.log('allItemsChecked:::', allItemsChecked);
 
   // 인풋에 값 입력 시
   const onChange = useCallback(
@@ -133,11 +134,50 @@ export default function CartPage() {
       cartItem?.map((item) => ({
         id: item?.id,
         checked: false,
+        docId: item?.docId,
       }))
     );
   }, [cartItem]);
 
   console.log('checkedList', checkedList);
+
+  // checkedList 모두 체크되는 경우, AllItemsChecked => true로 업데이트
+  useEffect(() => {
+    const allChecked = checkedList?.every((item) => item.checked);
+    if (allChecked) {
+      setAllItemsChecked(true);
+    } else {
+      setAllItemsChecked(false);
+    }
+  }, [checkedList]);
+
+  const handleChecked = useCallback(
+    (id: number) => {
+      setCheckedList((prev) =>
+        prev.map((item) => {
+          if (item.id === id) {
+            return { ...item, checked: !item.checked };
+          }
+          return item;
+        })
+      );
+    },
+    [setCheckedList]
+  );
+
+  const handleCheckboxChange = (id: number) => {
+    handleChecked(id);
+  };
+
+  const checkAllItems = () => {
+    setCheckedList((prev) =>
+      prev.map((item) => ({
+        ...item,
+        checked: true,
+      }))
+    );
+    setAllItemsChecked(!allItemsChecked);
+  };
 
   // 각 체크박스 랑목 클릭 시 termsList 업데이트
   // const handleChecked = useCallback((detail: number) => {
@@ -162,25 +202,25 @@ export default function CartPage() {
   //   []
   // );
 
-  const handleChecked = useCallback(
-    (detail: number) => () => {
-      setCheckedList((prev: any[]) => {
-        // Ensure prev is an array
-        if (!Array.isArray(prev)) {
-          prev = [];
-        }
+  // const handleChecked = useCallback(
+  //   (detail: number) => () => {
+  //     setCheckedList((prev: any[]) => {
+  //       // Ensure prev is an array
+  //       if (!Array.isArray(prev)) {
+  //         prev = [];
+  //       }
 
-        const tmp = prev.find((item: any) => item?.id === detail);
-        // setUnique(newdata.find((item) => item?.ecps_site === inputs.site)?.siteUnique ?? '');
-        // const currentValue = tmp ? prev[tmp] : false; // Use current value or false if undefined
-        return {
-          ...prev,
-          [tmp]: !prev[tmp] ?? false, // Toggle the current value
-        };
-      });
-    },
-    []
-  );
+  //       const tmp = prev.find((item: any) => item?.id === detail);
+  //       // setUnique(newdata.find((item) => item?.ecps_site === inputs.site)?.siteUnique ?? '');
+  //       // const currentValue = tmp ? prev[tmp] : false; // Use current value or false if undefined
+  //       return {
+  //         ...prev,
+  //         [tmp]: !prev[tmp] ?? false, // Toggle the current value
+  //       };
+  //     });
+  //   },
+  //   []
+  // );
 
   // 전체 동의
   // const handleAllCheck = useCallback(() => {
@@ -211,12 +251,44 @@ export default function CartPage() {
 
   const onChangeQuantity = useCallback(async (itemId: string, newQuantity: number) => {
     const collectionRef = collection(db, `cart/${auth?.currentUser?.uid}/items`); // <-- Correct usage
-    const docRef = doc(collectionRef, itemId);
-
-    await updateDoc(docRef, {
-      quantity: newQuantity,
-    });
+    // const docRef = doc(collectionRef, itemId);
+    console.log('collectionRef', collectionRef);
+    // console.log('docRef', docRef);
+    // await updateDoc(docRef, {
+    //   quantity: newQuantity,
+    // });
   }, []);
+  // const collectionRef = collection(db, `cart/${auth?.currentUser?.uid}/items`); // <-- Correct usage
+  // collection(db, `cart/${auth?.currentUser?.uid}/items`);
+  // const handleItemsDelete = useCallback(async () => {
+  //   checkedList?.map(async (item) => await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, item.docId)));
+  // }, []);
+  // const handleItemsDelete = useCallback(async () => {
+  //   await Promise.all(checkedList?.map(async (item) => await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, item.docId))));
+  // }, []);
+
+  const handleItemsDelete = useCallback(async () => {
+    // checked 값이 true인 아이템들의 docId를 가져옴
+    const docIdsToDelete = checkedList.filter((item) => item.checked).map((item) => item.docId);
+
+    // docIdsToDelete 배열에 있는 모든 문서를 삭제
+    await Promise.all(
+      docIdsToDelete.map(async (docId) => {
+        await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, docId));
+      })
+    );
+  }, [checkedList]);
+  const handleAllItemsDelete = useCallback(async () => {
+    // checked 값이 true인 아이템들의 docId를 가져옴
+    const docIdsToDelete = checkedList.map((item) => item.docId);
+
+    // docIdsToDelete 배열에 있는 모든 문서를 삭제
+    await Promise.all(
+      docIdsToDelete.map(async (docId) => {
+        await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, docId));
+      })
+    );
+  }, [checkedList]);
 
   // Set the "capital" field of the city 'DC'
 
@@ -225,7 +297,7 @@ export default function CartPage() {
       <FlexBox $margin="0 0 20px">
         <RegularFont $fontSize={16}>CART ({cartItem?.length})</RegularFont>
       </FlexBox>
-      <TableHeader headers={Header} />
+      <TableHeader headers={Header} checkAllItems={checkAllItems} allItemsChecked={allItemsChecked} />
       <TableBody>
         {cartItem === null ? (
           <Loader />
@@ -238,14 +310,16 @@ export default function CartPage() {
               // quantity={quantity[index]}
               quantity={item.quantity}
               setQuantity={setQuantity}
-              onChangeQuantity={onChangeQuantity}
+              // onChangeQuantity={onChangeQuantity}
               selectId={item.id}
               isGroup={true}
-              handleChecked={handleChecked(item.id)}
+              // handleChecked={handleChecked(item.id)}
+              checkedList={checkedList}
+              handleCheckboxChange={handleCheckboxChange}
             />
           ))
         ) : (
-          <C.NoResults>신청한 요청 목록이 없습니다.</C.NoResults>
+          <C.NoResults>장바구니가 비어 있습니다</C.NoResults>
         )}
       </TableBody>
       <TableFooter>
@@ -266,6 +340,7 @@ export default function CartPage() {
           bgColor={theme.colors.lightGrayBgColor}
           fontColor={theme.colors.blackColor}
           border={`1px solid ${theme.colors.blackColor}`}
+          onClick={handleAllItemsDelete}
         />
         <StyledButton
           title="선택 삭제"
@@ -275,6 +350,7 @@ export default function CartPage() {
           bgColor={theme.colors.lightGrayBgColor}
           fontColor={theme.colors.blackColor}
           border={`1px solid ${theme.colors.blackColor}`}
+          onClick={handleItemsDelete}
         />
       </FlexBox>
     </C.Wrapper>
