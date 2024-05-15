@@ -80,8 +80,8 @@ export default function CartPage() {
     };
   }, []);
 
-  console.log('cartItem', cartItem);
-  console.log('quantity:::', quantity);
+  // console.log('cartItem', cartItem);
+  // console.log('quantity:::', quantity);
 
   // 페이지 로드 시 장바구니 데이터로 checkedList 상태에 설정
   useEffect(() => {

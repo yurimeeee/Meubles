@@ -93,7 +93,7 @@ export default function Login() {
       console.log(error);
     }
   };
-  console.log(auth.currentUser);
+
   return (
     <L.Wrapper>
       <L.Form>

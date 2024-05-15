@@ -93,8 +93,6 @@ const Header = () => {
     };
   }, [searchTerm]);
 
-  console.log('filteredData', data);
-
   // 모바일 메뉴 토글
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -120,7 +118,6 @@ const Header = () => {
       setIsLoggedIn(true);
     }
   }, []);
-  // console.log('로그인 정보', auth.currentUser);
 
   return (
     <Wrapper>

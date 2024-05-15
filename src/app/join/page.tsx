@@ -138,7 +138,6 @@ export default function Join() {
     if (!term1 || !term2) {
       // 필수 동의 항목 미체크 시 리턴
       alert('필수 동의 항목에 체크해주세요');
-      console.log(term1, term2);
       return;
     }
 
