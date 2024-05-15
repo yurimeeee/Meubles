@@ -1,15 +1,11 @@
 import React, { Dispatch, SetStateAction } from 'react';
-// import { useNavigate, useLocation } from 'react-router-dom';
-import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
-
-import { MyEmployeeCardReq } from '@graphql/types';
-import QuantitySelect from '@components/share/QuantitySelect';
-import { Style } from '@mui/icons-material';
-import StyledCheckbox from '@components/styled/StyledCheckbox';
-import { numberFormatter } from '@utils/formatter';
 import styled from 'styled-components';
 import theme from '@styles/theme';
+
+import { numberFormatter } from '@utils/formatter';
+import QuantitySelect from '@components/share/QuantitySelect';
+import StyledCheckbox from '@components/styled/StyledCheckbox';
 import { MediumFont, RegularFont, SemiBoldFont, FlexBox } from '@components/styled/StyledComponents';
 
 type MobileCartListProps = {

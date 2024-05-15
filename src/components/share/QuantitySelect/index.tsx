@@ -13,7 +13,7 @@ import MinusIcon from '@assets/icons/MinusIcon';
 
 type QuantitySelectProps = {
   quantity: number;
-  setQuantity: Dispatch<SetStateAction<number>>;
+  setQuantity?: Dispatch<SetStateAction<number>>;
   buttonSize?: number;
   fontSize?: number;
   margin?: string;
@@ -31,8 +31,9 @@ const QuantitySelect = ({ quantity, setQuantity, buttonSize, fontSize, margin, o
           // if (onChangeQuantity) {
           //   onChangeQuantity(selectId as number, quantity - 1);
           // } else {
-          setQuantity(quantity - 1);
-          // }
+          if (setQuantity) {
+            setQuantity(quantity - 1);
+          }
         }}
       >
         <MinusIcon />
@@ -46,8 +47,9 @@ const QuantitySelect = ({ quantity, setQuantity, buttonSize, fontSize, margin, o
           // if (onChangeQuantity) {
           //   onChangeQuantity(selectId as number, quantity + 1);
           // } else {
-          setQuantity(quantity + 1);
-          // }
+          if (setQuantity) {
+            setQuantity(quantity + 1);
+          }
         }}
       >
         <PlusIcon />

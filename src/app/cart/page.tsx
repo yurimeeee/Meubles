@@ -302,11 +302,12 @@ export default function CartPage() {
         <C.AmountPayment>
           <C.TotalPrice>
             <C.RowTitle>합계</C.RowTitle>
-            <C.RowText>{cartItem && `${numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0 || 0) + 50000)}`}</C.RowText>
+
+            <C.RowText>{cartItem && `${numberFormatter((cartItem?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000)}`}</C.RowText>
           </C.TotalPrice>
           <C.RowFlex>
             <C.RowTitle>상품 구매금액</C.RowTitle>
-            <C.RowText>{numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0))}</C.RowText>
+            <C.RowText>{numberFormatter(cartItem?.reduce((total, item) => total + Number(item.price) * item.quantity, 0))}</C.RowText>
           </C.RowFlex>
           <C.RowFlex>
             <C.RowTitle>배송비</C.RowTitle>

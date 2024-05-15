@@ -34,7 +34,8 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [searchedList, setSearchedList] = useRecoilState<Product[]>(searchedItems);
+  // const [searchedList, setSearchedList] = useRecoilState<Product[]>(searchedItems);
+  const [searchedList, setSearchedList] = useRecoilState(searchedItems);
 
   const [data, setData] = useState<Product[]>([]);
 
@@ -56,10 +57,10 @@ const Header = () => {
     router.push(`/search/${searchTerm}`);
     setSearchOpen(false);
   };
+  let timeoutId: NodeJS.Timeout | null = null;
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
+    let timeoutId: NodeJS.Timeout | null = null;
     if (searchTerm) {
       const lowerCaseKeyword = searchTerm.toLowerCase(); // Convert to lowercase
 
@@ -77,7 +78,7 @@ const Header = () => {
             String(product.desc).toLowerCase().includes(lowerCaseKeyword.trim())
         );
         setData(filteredData);
-        setSearchedList(filteredData);
+        setSearchedList(filteredData as any);
       }, 200);
     } else {
       // If searchTerm is empty, clear the data immediately
@@ -86,7 +87,9 @@ const Header = () => {
 
     // Cleanup timeout on component unmount
     return () => {
-      clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId as NodeJS.Timeout);
+      }
     };
   }, [searchTerm]);
 

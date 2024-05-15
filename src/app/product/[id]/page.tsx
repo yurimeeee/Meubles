@@ -3,31 +3,31 @@
 import * as P from './productDetail.style';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Cookies, useCookies } from 'react-cookie';
+import { addDoc, collection, getDocs, query, updateDoc, where, doc, DocumentReference } from 'firebase/firestore';
+import { auth, db } from '@lib/firebase';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 
+import theme from '@styles/theme';
 import { Product, productData } from '@utils/productData';
+import { numberFormatter } from '@utils/formatter';
 import { FlexBox } from '@components/styled/StyledComponents';
 import StyledButton from '@components/styled/StyledButton';
-import theme from '@styles/theme';
+import BlankLoader from '@components/share/BlankLoader';
 import QuantitySelect from '@components/share/QuantitySelect';
+import Modal from '@components/share/Modal';
+
 import HeartIcon from '@assets/icons/HeartIcon';
-
-import { numberFormatter } from '@utils/formatter';
-
-import { styled } from '@mui/material/styles';
-
 import PlusIcon from '@assets/icons/PlusIcon';
 import MinusIcon from '@assets/icons/MinusIcon';
+
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import MuiAccordionSummary, { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import { auth, db } from '@lib/firebase';
-import Modal from '@components/share/Modal';
-import { addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
-import { MainImg } from '../../(mypage)/mypage.style';
-import BlankLoader from '@components/share/BlankLoader';
+import AccordionSummary from '@mui/material/AccordionSummary';
 
 const ProductDetailPage = ({ params }: { params: { id: string } }) => {
   const [data, setData] = useState<Product>();
@@ -35,110 +35,55 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
   const [quantity, setQuantity] = useState<number>(1);
   const [expanded, setExpanded] = useState<string | false>('');
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [exist, setExist] = useState<boolean>(false);
+  const [exist, setExist] = useState<boolean>(false); // 장바구니에 동일 상품 존재 여부
 
+  const [cookies, setCookie] = useCookies(['RecentlyViewed']);
   const router = useRouter();
 
   useEffect(() => {
     if (params) {
+      // params로 전달된 상품 Id로 상품 조회
       const tmpData = productData.find((product) => String(product.id) === params.id);
-      setData(tmpData as any);
+
+      // data, mainImg 상태에 저장
+      setData(tmpData);
       setMainImg(tmpData?.mainImg as string);
     }
   }, [params]);
+
+  useEffect(() => {
+    if (data && cookies.RecentlyViewed) {
+      const updatedRecentlyViewed = [...cookies.RecentlyViewed];
+      // 상품 Id가 이미 존재하는지 확인
+      const index = updatedRecentlyViewed.indexOf(data.id);
+
+      // 상품 Id가 이미 존재하는 경우
+      if (index !== -1) {
+        // 기존의 Id 삭제
+        updatedRecentlyViewed.splice(index, 1);
+      }
+      // 새로운 데이터 Id를 배열에 추가
+      updatedRecentlyViewed.push(data.id);
+
+      // 쿠키 업데이트
+      setCookie('RecentlyViewed', updatedRecentlyViewed, {
+        path: '/',
+        maxAge: 24 * 60 * 60, // 1일 동안 쿠키 유지
+      });
+    }
+  }, [data]);
 
   // 아코디언 작동
   const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
     setExpanded(newExpanded ? panel : false);
   };
-  console.log('data', data);
-  // 장바구니 담기
-  // const onClickAddToCart = useCallback(async () => {
-  //   const { id, brand, name, price, mainImg } = data;
-  //   if (!auth.currentUser) {
-  //     alert('로그인이 필요합니다.');
-  //     router.push('/login');
-  //   }
-
-  //   const uid = auth?.currentUser?.uid;
-  //   // cart 컬렉션 참조
-  //   const cartCollection = `cart/${uid}/items`;
-
-  //   // await addDoc(collection(db, cartCollection), {
-  //   //   id,
-  //   //   brand,
-  //   //   name,
-  //   //   price,
-  //   //   quantity,
-  //   //   img: mainImg,
-  //   // });
-
-  //   // Define the collection, query, and filter
-  //   const itemsCollectionRef = collection(db, cartCollection);
-  //   const q = query(itemsCollectionRef, where('name', '==', name));
-  //   const querySnapshot = await getDocs(q);
-
-  //   querySnapshot.forEach(async (doc) => {
-  //     console.log(doc.id, ' => ', doc.data());
-  //     if (doc.data() !== null) {
-  //       // console.log('중복');
-  //       setExist(true);
-  //     } else {
-  //       await addDoc(collection(db, cartCollection), {
-  //         id,
-  //         brand,
-  //         name,
-  //         price,
-  //         quantity,
-  //         img: mainImg,
-  //       });
-  //     }
-  //   });
-
-  //   setModalOpen(!modalOpen);
-  // }, [data, quantity]);
-  // 장바구니 담기
-  // const onClickAddToCart = useCallback(async () => {
-  //   const { id, brand, name, price, mainImg } = data;
-  //   if (!auth.currentUser) {
-  //     alert('로그인이 필요합니다.');
-  //     router.push('/login');
-  //   }
-
-  //   const uid = auth?.currentUser?.uid;
-  //   // cart 컬렉션 참조
-  //   const cartCollection = `cart/${uid}/items`;
-
-  //   // Define the collection, query, and filter
-  //   const itemsCollectionRef = collection(db, cartCollection);
-  //   const q = query(itemsCollectionRef, where('name', '==', name));
-  //   const querySnapshot = await getDocs(q);
-
-  //   let exists = false;
-  //   for (const doc of querySnapshot.docs) {
-  //     console.log(doc.id, ' => ', doc.data());
-  //     exists = true;
-  //     const docRef = doc(db, `cart/${uid}/items`, doc.id);
-  //     await updateDoc(docRef, { quantity: quantity + quantity });
-  //     break; // Exit the loop as soon as a document is found
-  //   }
-
-  //   if (!exists) {
-  //     await addDoc(collection(db, cartCollection), {
-  //       id,
-  //       brand,
-  //       name,
-  //       price,
-  //       quantity,
-  //       img: mainImg,
-  //     });
-  //   }
-
-  //   setModalOpen(!modalOpen);
-  // }, [data, quantity]);
 
   // 장바구니 담기
   const onClickAddToCart = useCallback(async () => {
+    if (!data) {
+      return;
+    }
+
     const { id, brand, name, price, mainImg } = data;
     if (!auth.currentUser) {
       alert('로그인이 필요합니다.');
@@ -155,8 +100,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
     const querySnapshot = await getDocs(q);
 
     let exists = false;
-    for (const doc of querySnapshot.docs) {
-      console.log(doc.id, ' => ', doc.data().quantity);
+    for (const doc of querySnapshot.docs as any) {
       exists = true;
       const docRef = doc(db, `${cartCollection}`, doc.id);
       // const docRef = doc(db, `${cartCollection}/${doc.id}`); // Correction here
@@ -184,13 +128,13 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
         {data === undefined && (
           <>
             <P.Brand>
-              <BlankLoader width="180px" height="22px" />
+              <BlankLoader width={180} height={22} />
             </P.Brand>
             <P.Name>
-              <BlankLoader width="430px" height="36px" />
+              <BlankLoader width={430} height={36} />
             </P.Name>
             <P.Price>
-              <BlankLoader width="200px" height="28px" />
+              <BlankLoader width={200} height={28} />
             </P.Price>
           </>
         )}
@@ -200,7 +144,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
         <QuantitySelect quantity={quantity} setQuantity={setQuantity} />
         {data === undefined ? (
           <P.TotalPrice>
-            <BlankLoader width="250px" height="28px" />
+            <BlankLoader width={250} height={28} />
           </P.TotalPrice>
         ) : (
           <P.TotalPrice>
@@ -216,7 +160,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
         </FlexBox>
         <Modal modalOpen={modalOpen} setModalOpen={setModalOpen} exist={exist} />
         {/* Accordion */}
-        <P.AccordionWrap>
+        {/* <P.AccordionWrap>
           <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
             <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
               <Typography>DESCRIPTION</Typography>
@@ -297,7 +241,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
               <P.DetailText>첫 리뷰 작성 시 5,000 적립금을 드립니다.</P.DetailText>
             </AccordionDetails>
           </Accordion>
-        </P.AccordionWrap>
+        </P.AccordionWrap> */}
         {/* Accordion */}
       </P.Info>
       <P.ImgBox>
@@ -307,7 +251,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
         {data === undefined && (
           <P.SubImgList>
             {[...Array(4)].map((_, index) => (
-              <BlankLoader key={index} width="117px" height="117px" />
+              <BlankLoader key={index} width={117} height={117} />
             ))}
           </P.SubImgList>
         )}
@@ -348,28 +292,44 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
 
 export default ProductDetailPage;
 
-const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
-  '&:not(:last-child)': {
-    borderBottom: 0,
-  },
-  '&::before': {
-    display: 'none',
-  },
-}));
-const AccordionSummary = styled((props: AccordionSummaryProps) => (
-  <MuiAccordionSummary expandIcon={props.expanded ? <MinusIcon sx={{ fontSize: '0.9rem' }} /> : <PlusIcon sx={{ fontSize: '0.9rem' }} />} {...props} />
-))(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
-  flexDirection: 'row-reverse',
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(90deg)',
-  },
-  '& .MuiAccordionSummary-content': {
-    marginLeft: theme.spacing(1),
-  },
-}));
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: '1px solid rgba(0, 0, 0, .125)',
-}));
+// const Accordion = styled((props: AccordionProps) => <MuiAccordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
+//   border: `1px solid ${theme.palette.divider}`,
+//   '&:not(:last-child)': {
+//     borderBottom: 0,
+//   },
+//   '&::before': {
+//     display: 'none',
+//   },
+// }));
+// const AccordionSummary = styled((props: AccordionSummaryProps) => (
+//   <MuiAccordionSummary expandIcon={props.expanded ? <MinusIcon sx={{ fontSize: '0.9rem' }} /> : <PlusIcon sx={{ fontSize: '0.9rem' }} />} {...props} />
+// ))(({ theme }) => ({
+//   backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
+//   flexDirection: 'row-reverse',
+//   '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+//     transform: 'rotate(90deg)',
+//   },
+//   '& .MuiAccordionSummary-content': {
+//     marginLeft: theme.spacing(1),
+//   },
+// }));
+
+// const AccordionSummary = styled(AccordionSummary)<{ $expanded: boolean }>`
+//   ${({ theme, $expanded }) => ({
+//     backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, .05)' : 'rgba(0, 0, 0, .03)',
+//     flexDirection: 'row-reverse',
+//     '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+//       transform: 'rotate(90deg)',
+//     },
+//     '& .MuiAccordionSummary-content': {
+//       marginLeft: theme.spacing(1),
+//     },
+//     // Add conditional styling based on $expanded prop
+//     // For example, change background color when expanded
+//     backgroundColor: $expanded ? 'lightblue' : 'inherit',
+//   })}
+// `;
+// const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
+//   padding: theme.spacing(2),
+//   borderTop: '1px solid rgba(0, 0, 0, .125)',
+// }));

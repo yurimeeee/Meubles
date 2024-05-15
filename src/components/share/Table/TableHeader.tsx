@@ -12,7 +12,7 @@ export type HeaderType = {
 type TableRowProps = {
   headers: HeaderType[];
   // checkAllItems?: () => void;
-  checkAllItems?: (e: ChangeEvent<HTMLInputElement>) => void;
+  checkAllItems: (e: ChangeEvent<HTMLInputElement>) => void;
   allItemsChecked: boolean;
 };
 
