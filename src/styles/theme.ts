@@ -43,10 +43,11 @@ const colors = {
   blackColor: "#000000",
   primaryColor: "#729BF1",
 
-  // Font
-  grayFontColor: "#6D737F",
+  // Font    
+  // grayFontColor: "#6D737F",
+  grayFontColor: "#8E8E8E",
   deepGrayFontColor: "#6E6E6E",
-  darkGrayFontColor: "#333333",
+  darkGrayFontColor: "#565656",
   lightGrayFontColor: "#B3B3B3",
   ultraLightGrayFontColor: "#8A8A8A",
   darkFontColor: "#1D2433",

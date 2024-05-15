@@ -68,7 +68,7 @@ export default MobileCartList;
 
 const Wrapper = styled.div`
   width: 100%;
-  min-width: calc(100vw - 40px);
+  /* min-width: calc(100vw - 40px); */
   display: flex;
   justify-content: start;
   gap: 16px;

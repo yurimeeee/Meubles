@@ -304,7 +304,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
         {/* <FlexBox $flexDirection="column" $gap="10px"> */}
         <P.MainWrap>{data === undefined ? <BlankLoader /> : <P.MainImg src={mainImg} alt={data?.name} />}</P.MainWrap>
 
-        {/* {data === undefined && (
+        {data === undefined && (
           <P.SubImgList>
             {[...Array(4)].map((_, index) => (
               <BlankLoader key={index} width="117px" height="117px" />
@@ -319,7 +319,6 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
                 <SwiperSlide key={idx}>
                   <P.SubImg
                     src={sub}
-                    // key={idx}
                     onClick={() => {
                       setMainImg(sub);
                     }}
@@ -340,7 +339,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
               />
             ))}
           </P.SubImgList>
-        )} */}
+        )}
         {/* </FlexBox> */}
       </P.ImgBox>
     </P.Wrapper>

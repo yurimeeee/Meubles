@@ -189,62 +189,64 @@ export default function CartPage() {
       <FlexBox $margin="0 0 20px">
         <RegularFont $fontSize={16}>CART ({cartItem?.length})</RegularFont>
       </FlexBox>
-      {/* <TableHeader headers={Header} checkAllItems={checkAllItems} allItemsChecked={allItemsChecked} />
-      <TableBody>
-        {cartItem === null ? (
-          <Loader />
-        ) : cartItem.length > 0 && quantity ? (
-          cartItem?.map((item, index) => (
-            <CartListTable
-              key={index}
-              headers={Header}
-              item={item}
-              // quantity={quantity[index]}
-              quantity={item.quantity}
-              setQuantity={setQuantity}
-              // onChangeQuantity={onChangeQuantity}
-              selectId={item.id}
-              isGroup={true}
-              // handleChecked={handleChecked(item.id)}
-              checkedList={checkedList}
-              handleCheckboxChange={handleCheckboxChange}
-            />
-          ))
-        ) : (
-          <C.NoResults>장바구니가 비어 있습니다</C.NoResults>
-        )}
-      </TableBody>
-      <TableFooter>
-        <FlexBox $justifyContent="end">
-          <RegularFont>
-            상품 구매금액 <SemiBoldFont>{numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0))}</SemiBoldFont> + 배송비{' '}
-            <SemiBoldFont>50,000</SemiBoldFont> = 합계 :{' '}
-            <SemiBoldFont>KRW {numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0 || 0) + 50000)}</SemiBoldFont>
-          </RegularFont>
+      {/* <C.PCCart>
+        <TableHeader headers={Header} checkAllItems={checkAllItems} allItemsChecked={allItemsChecked} />
+        <TableBody>
+          {cartItem === null ? (
+            <Loader />
+          ) : cartItem.length > 0 && quantity ? (
+            cartItem?.map((item, index) => (
+              <CartListTable
+                key={index}
+                headers={Header}
+                item={item}
+                // quantity={quantity[index]}
+                quantity={item.quantity}
+                setQuantity={setQuantity}
+                // onChangeQuantity={onChangeQuantity}
+                selectId={item.id}
+                isGroup={true}
+                // handleChecked={handleChecked(item.id)}
+                checkedList={checkedList}
+                handleCheckboxChange={handleCheckboxChange}
+              />
+            ))
+          ) : (
+            <C.NoResults>장바구니가 비어 있습니다</C.NoResults>
+          )}
+        </TableBody>
+        <TableFooter>
+          <FlexBox $justifyContent="end">
+            <RegularFont>
+              상품 구매금액 <SemiBoldFont>{numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0))}</SemiBoldFont> + 배송비{' '}
+              <SemiBoldFont>50,000</SemiBoldFont> = 합계 :{' '}
+              <SemiBoldFont>KRW {numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0 || 0) + 50000)}</SemiBoldFont>
+            </RegularFont>
+          </FlexBox>
+        </TableFooter>
+        <FlexBox $gap="12px" $margin="16px 0 0">
+          <StyledButton
+            title="전체 삭제"
+            fontSize={12}
+            width={88}
+            height={30}
+            bgColor={theme.colors.lightGrayBgColor}
+            fontColor={theme.colors.blackColor}
+            border={`1px solid ${theme.colors.blackColor}`}
+            onClick={handleAllItemsDelete}
+          />
+          <StyledButton
+            title="선택 삭제"
+            fontSize={12}
+            width={88}
+            height={30}
+            bgColor={theme.colors.lightGrayBgColor}
+            fontColor={theme.colors.blackColor}
+            border={`1px solid ${theme.colors.blackColor}`}
+            onClick={handleItemsDelete}
+          />
         </FlexBox>
-      </TableFooter>
-      <FlexBox $gap="12px" $margin="16px 0 0">
-        <StyledButton
-          title="전체 삭제"
-          fontSize={12}
-          width={88}
-          height={30}
-          bgColor={theme.colors.lightGrayBgColor}
-          fontColor={theme.colors.blackColor}
-          border={`1px solid ${theme.colors.blackColor}`}
-          onClick={handleAllItemsDelete}
-        />
-        <StyledButton
-          title="선택 삭제"
-          fontSize={12}
-          width={88}
-          height={30}
-          bgColor={theme.colors.lightGrayBgColor}
-          fontColor={theme.colors.blackColor}
-          border={`1px solid ${theme.colors.blackColor}`}
-          onClick={handleItemsDelete}
-        />
-      </FlexBox> */}
+      </C.PCCart> */}
       <C.MobileCart>
         <C.CartListHeader>
           <StyledCheckbox checked={allItemsChecked} onChange={checkAllItems} />
@@ -311,32 +313,31 @@ export default function CartPage() {
             <C.RowText>50,000</C.RowText>
           </C.RowFlex>
         </C.AmountPayment>
-
-        <FlexBox $gap="12px" $margin="16px auto 0" $justifyContent="center">
-          <StyledButton
-            title="전체 상품 주문"
-            fontSize={14}
-            width={110}
-            height={45}
-            padding="0 10px"
-            bgColor={theme.colors.blackColor}
-            fontColor={theme.colors.whiteColor}
-            border={`1px solid ${theme.colors.blackColor}`}
-            onClick={handleAllItemsDelete}
-          />
-          <StyledButton
-            title="선택 상품 주문"
-            fontSize={14}
-            width={110}
-            height={45}
-            padding="0 10px"
-            bgColor={theme.colors.lightGrayBgColor}
-            fontColor={theme.colors.blackColor}
-            border={`1px solid ${theme.colors.blackColor}`}
-            onClick={handleItemsDelete}
-          />
-        </FlexBox>
       </C.MobileCart>
+      <FlexBox $gap="12px" $margin="16px auto 0" $justifyContent="center">
+        <StyledButton
+          title="전체 상품 주문"
+          fontSize={14}
+          width={110}
+          height={45}
+          padding="0 10px"
+          bgColor={theme.colors.blackColor}
+          fontColor={theme.colors.whiteColor}
+          border={`1px solid ${theme.colors.blackColor}`}
+          onClick={handleAllItemsDelete}
+        />
+        <StyledButton
+          title="선택 상품 주문"
+          fontSize={14}
+          width={110}
+          height={45}
+          padding="0 10px"
+          bgColor={theme.colors.lightGrayBgColor}
+          fontColor={theme.colors.blackColor}
+          border={`1px solid ${theme.colors.blackColor}`}
+          onClick={handleItemsDelete}
+        />
+      </FlexBox>
     </C.Wrapper>
   );
 }

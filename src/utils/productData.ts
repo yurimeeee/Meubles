@@ -414,8 +414,8 @@ export const productData: Product[] = [
     subImg: [
       'https://www.hpix.co.kr/web/product/big/202204/619e14e40316e94a11de7883d006732a.jpg',
       'https://www.hpix.co.kr/web/upload/NNEditor/20220413/lot20lite20white20main2.jpg',
-      'https://wwsculpturalw.hpix.co.kr/web/upload/NNEditor/20221101/Tecta_Tische_M21_Tecta_1.jpeg',
-      'https://www.hpix.co.kr/web/upload/NNEditor/20221101/copy-1667289889-KakaoTalk_Photo_2019-08-26-17-49-48.jpg',
+      'https://www.hpix.co.kr/web/upload/NNEditor/20230912/Tecta_Lot_Lite_D9_Cut_Berlin-1536x1016.jpg',
+      'https://www.hpix.co.kr/web/upload/NNEditor/20230912/Tecta_aLOT_Lite_D9_Wolfgang_Hartauer_5.jpeg',
     ],
     best: false,
     new: true,

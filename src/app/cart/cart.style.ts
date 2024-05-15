@@ -25,10 +25,21 @@ export const NoResults = styled(RegularFont)`
   justify-content: center;
   padding: 0 20px;
 `;
+export const PCCart = styled.div`
+  display: block;
 
-
+${theme.devices.mobile} {
+  display: none;
+}
+`;
 export const MobileCart = styled.div`
+  /* display: none; */
   width: 100%;
+  max-width: 1280px;
+
+  ${theme.devices.mobile} {
+    /* display: block; */
+  }
 
 `;
 export const CartList = styled.div`
