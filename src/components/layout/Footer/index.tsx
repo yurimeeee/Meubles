@@ -75,8 +75,12 @@ export default Footer;
 
 export const Wrapper = styled.header`
   width: 100vw;
-
+  margin-top: 200px;
   background-color: ${theme.colors.whiteColor};
+
+  ${theme.devices.mobile} {
+    margin-top: 100px;
+  }
 `;
 const Container = styled.div`
   display: flex;

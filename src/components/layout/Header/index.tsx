@@ -149,21 +149,23 @@ const Header = () => {
             </MobileMenuItem>
           </MobileMenu>
           {/* <MobileMenuButton> */}
-          {auth.currentUser ? (
-            <MobileMenuButton
-              onClick={() => {
-                handleLogout();
-                toggleMobileMenu();
-              }}
-            >
-              <MdLogout size={24} color={theme.colors.grayIconColor} />
-              LOGOUT
-            </MobileMenuButton>
-          ) : (
-            <MobileMenuItem href={'/login'} onClick={toggleMobileMenu}>
-              LOGIN
-            </MobileMenuItem>
-          )}
+          <MobileMenuFlex>
+            {auth.currentUser ? (
+              <MobileMenuButton
+                onClick={() => {
+                  handleLogout();
+                  toggleMobileMenu();
+                }}
+              >
+                <MdLogout size={24} color={theme.colors.grayIconColor} />
+                LOGOUT
+              </MobileMenuButton>
+            ) : (
+              <MobileMenuItem href={'/login'} onClick={toggleMobileMenu}>
+                LOGIN
+              </MobileMenuItem>
+            )}
+          </MobileMenuFlex>
         </MenuWrap>
         {/* 모바일메뉴 */}
 
@@ -492,7 +494,6 @@ const MobileMenuItem = styled(Link)`
 `;
 const MobileMenuButton = styled.button`
   display: flex;
-  /* justify-content: center; */
   align-items: center;
   gap: 6px;
   padding: 13px 0;
@@ -500,4 +501,10 @@ const MobileMenuButton = styled.button`
   line-height: 17px;
   color: ${theme.colors.grayIconColor};
   cursor: pointer;
+`;
+const MobileMenuFlex = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 20px;
 `;
