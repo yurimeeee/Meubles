@@ -67,7 +67,7 @@ const Button = styled.button<IButton>`
   cursor: ${({ $cursor }) => $cursor};
 
   &:hover {
-    background-color: ${({ disabled, $bgColor }) => !disabled && ($bgColor === '#FFFFFF' ? theme.colors.whiteHoverColor : lighten(0.01, $bgColor ?? theme.colors.blackColor))};
+    background-color: ${({ disabled, $bgColor }) => !disabled && ($bgColor === '#FFFFFF' ? theme.colors.whiteColor : lighten(0.01, $bgColor ?? theme.colors.blackColor))};
     opacity: 0.6;
   }
 
