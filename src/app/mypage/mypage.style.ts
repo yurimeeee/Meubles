@@ -1,38 +1,72 @@
 "use client";
 
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import theme from "@styles/theme";
+import { RegularFont, SemiBoldFont } from "@components/styled/StyledComponents";
+import Link from "next/link";
 
 
 export const Wrapper = styled.main`
   margin: 0 auto;
-`;
-const ImgMove = keyframes`
-  0%{  transform: scale(1); }
-  100% {  transform: scale(1.2); }
-`;
-export const MainImg = styled.div`
-  width: 100%;
-  /* min-width: 320px; */
-  max-width: 1280px;
-  height: 600px;
-  position: relative;
-  overflow: hidden;
-  margin: 80px auto 160px;
+  padding: 60px 20px;
 
-&::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 2;
-  background-image: url("/images/main_img.png");
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-color: inherit;
-  animation: ${ImgMove} 6.0s forwards;
-  animation-timing-function: linear;
-}
+  ${theme.devices.desktop} {
+    padding: 60px 0;
+  } 
+
+  ${theme.devices.mobile} {
+    padding: 30px 20px;
+  } 
+`;
+
+export const AccountWrap = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0 30px;
+  border-top: 1px solid ${theme.colors.blackColor};
+  border-bottom: 1px solid ${theme.colors.blackColor};
+`;
+export const MyAccount = styled(SemiBoldFont)`
+ ${theme.typography.h5}
+`;
+export const Welcome = styled(RegularFont)`
+ ${theme.typography.body}
+`;
+export const SettingLink = styled(Link)`
+ ${theme.typography.sm}
+`;
+
+export const CategoryList = styled.ul`
+  display: flex;
+  gap: 20px;
+  margin-top: 50px;
+
+  ${theme.devices.mobile} {
+    margin-bottom: 4px;
+    gap: 6px 20px;
+    flex-wrap: wrap;
+  }
+`;
+export const CategoryItem = styled.li<{ $Active: boolean }>`
+  ${theme.typography.h7};
+  color: ${({ $Active }) => ($Active ? theme.colors.blackColor : theme.colors.grayFontColor)};
+  transition: 0.3s;
+  cursor: pointer;
+
+  ${theme.devices.mobile} {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+`;
+export const ActiveBar = styled.div<{ $Active: boolean }>`
+  width: 0px;
+  height: 1.5px;
+  bottom: -2px;
+  transition: 0.3s ease-out;
+  ${({ $Active }) =>
+    $Active &&
+    css`
+      width: 100%;
+      background-color: ${theme.colors.blackColor}}
+    `};
 `;

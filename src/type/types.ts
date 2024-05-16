@@ -39,3 +39,12 @@ export type Product = {
   keyword: string;      // 키워드 
   id: number;           // 상품 Id
 };
+
+// 유저 정보
+export type UserInfo = {
+  email: string;        // 이메일
+  name: string;         // 이름
+  address?: string;      // 주소
+  addressDetail?: string;// 상세주소
+  phone: string;        // 연락처
+};

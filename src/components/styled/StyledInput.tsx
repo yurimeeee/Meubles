@@ -20,7 +20,7 @@ interface StyledInputProps {
   responsive?: boolean;
   type?: string;
   name?: string;
-  value?: string | number;
+  value?: string | number | undefined;
   oninput?: any;
   onClick?: () => void;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -130,7 +130,6 @@ const Label = styled.label<{ $bordered?: boolean }>`
   width: 100%;
   height: 50px;
   padding: 14px 12px;
-  /* border: 1px solid ${theme.colors.grayBorderColor}; */
   position: relative;
   color: ${({ theme }) => theme.colors.deepGrayFontColor};
 `;
@@ -152,10 +151,8 @@ const Input = styled.input<{
   padding: ${({ $padding }) => ($padding ? $padding : '14px 12px')};
   margin: ${({ $margin }) => ($margin ? $margin : 0)};
   border-bottom: ${({ $bordered }) => ($bordered ? 'none' : `1px solid ${theme.colors.blackColor}`)};
-  /* border: ${({ $bordered }) => ($bordered ? `1px solid ${theme.colors.blackColor}` : 'none')}; */
   font-size: ${({ $fontSize }) => $fontSize && `${$fontSize}px`};
   line-height: ${({ $lineHeight }) => $lineHeight && `${$lineHeight}px`};
-  /* background-color: ${({ $readOnly, $disabled }) => ($readOnly || $disabled ? '#f2f2f2' : theme.colors.whiteColor)}; */
   color: ${({ $readOnly, $disabled }) => ($readOnly || $disabled ? theme.colors.deepGrayFontColor : theme.colors.blackColor)};
   position: ${({ type }) => (type === 'file' ? 'absolute' : 'static')};
   border-radius: 0 !important;

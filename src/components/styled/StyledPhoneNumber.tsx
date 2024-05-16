@@ -21,6 +21,15 @@ const StyledPhoneNumber = ({ width = 440, height = 50, title, margin, value, onC
   const [number2, setNumber2] = useState('');
   const [number3, setNumber3] = useState('');
 
+  useEffect(() => {
+    if (value) {
+      setNumber1(value.substring(0, 3));
+      setNumber2(value.substring(3, 7));
+      setNumber3(value.substring(7, 11));
+    }
+  }, [value]);
+
+  console.log(setNumber1, setNumber2, setNumber3);
   const onChangeNumber = useCallback(
     (name: string) => (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -48,7 +57,7 @@ const StyledPhoneNumber = ({ width = 440, height = 50, title, margin, value, onC
 
     onChange({
       target: {
-        name: 'recipientPhone',
+        name: 'phone',
         value: phoneNumber,
       },
     } as ChangeEvent<HTMLInputElement>);
@@ -86,7 +95,6 @@ const Hyphen = styled.span`
 `;
 const InputWrap = styled.div`
   width: 100%;
-  /* min-width: 440px; */
   display: flex;
   align-items: center;
   justify-content: space-between;

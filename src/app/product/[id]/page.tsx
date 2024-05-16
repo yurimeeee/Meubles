@@ -4,7 +4,7 @@ import * as P from './productDetail.style';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCookies } from 'react-cookie';
-import { addDoc, collection, getDocs, query, updateDoc, where, doc, DocumentReference } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, updateDoc, where, doc, DocumentReference, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '@lib/firebase';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -19,7 +19,7 @@ import BlankLoader from '@components/share/BlankLoader';
 import QuantitySelect from '@components/share/QuantitySelect';
 import AccordionContents from '@components/share/Accordion';
 import Modal from '@components/share/Modal';
-
+import { PiHeartStraightLight, PiHeartStraightFill } from 'react-icons/pi';
 import HeartIcon from '@assets/icons/HeartIcon';
 
 const ProductDetailPage = ({ params }: { params: { id: string } }) => {
@@ -29,6 +29,8 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
   const [expanded, setExpanded] = useState<string | false>('');
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [exist, setExist] = useState<boolean>(false); // 장바구니에 동일 상품 존재 여부
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false); // 장바구니에 동일 상품 존재 여부
+  const [bookmarkList, setBookmarkList] = useState<any>(false); // 장바구니에 동일 상품 존재 여부
 
   const [cookies, setCookie] = useCookies(['RecentlyViewed']);
   const router = useRouter();
@@ -66,10 +68,59 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
     }
   }, [data]);
 
-  // 아코디언 작동
-  const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-    setExpanded(newExpanded ? panel : false);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const uid = auth?.currentUser?.uid;
+      const querySnapshot = await getDocs(collection(db, `users/${uid}/bookmark`));
+      const dataList = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setBookmarkList(dataList);
+    };
+    fetchData();
+  }, [auth?.currentUser?.uid, setIsBookmarked]);
+
+  useEffect(() => {
+    if (bookmarkList && bookmarkList.find((item: any) => Number(item.id) === data?.id)) {
+      setIsBookmarked(true);
+    }
+  }, [bookmarkList]);
+
+  const onClickBookmarkToggle = useCallback(async () => {
+    if (!auth.currentUser) {
+      alert('로그인이 필요합니다.');
+      // router.push('/login');
+    }
+    alert('tkrwp.');
+
+    if (isBookmarked) {
+      await deleteDoc(doc(db, `users/${auth?.currentUser?.uid}/bookmark/${data?.id}`));
+      setIsBookmarked(false);
+    } else {
+    }
+    // checked 값이 true인 아이템들의 docId를 가져옴
+    // const docIdsToDelete = checkedList.map((item) => item.docId);
+
+    // docIdsToDelete 배열에 있는 모든 문서를 삭제
+    // await docIdsToDelete.map(async (docId) => {
+    // await deleteDoc(doc(db, `users/${auth?.currentUser?.uid}/bookmark`, data?.id));
+
+    // const replyDocRef = doc(db, `users/${auth?.currentUser?.uid}/bookmark`, data?.id);
+    // await deleteDoc(replyDocRef);
+
+    // });
+  }, [data]);
+
+  // const onClickBookmarkToggle = async () => {
+  //   try {
+  //     // 문서 삭제
+  //     await deleteDoc(doc(db, `users/${auth?.currentUser?.uid}/bookmark`, data?.id));
+  //     console.log('Document successfully deleted!');
+  //   } catch (error) {
+  //     console.error('Error removing document: ', error);
+  //   }
+  // };
 
   // 장바구니 담기
   const onClickAddToCart = useCallback(async () => {
@@ -195,7 +246,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
         </P.TotalPrice> */}
         <FlexBox $gap="16px" $margin="0 0 56px">
           <StyledButton title="ADD TO CART" onClick={onClickAddToCart} fontSize={18} bgColor={theme.colors.blackColor} fontColor={theme.colors.whiteColor} />
-          <HeartIcon />
+          {isBookmarked ? <PiHeartStraightFill size={32} onClick={onClickBookmarkToggle} /> : <PiHeartStraightLight size={32} onClick={onClickBookmarkToggle} />}
         </FlexBox>
         <Modal modalOpen={modalOpen} setModalOpen={setModalOpen} exist={exist} />
 
