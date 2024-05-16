@@ -1,4 +1,4 @@
-import { Product } from '@utils/productData';
+import { Product } from '@type/types';
 import { useEffect, useState } from 'react';
 
 export const useSortByItems = (data: Product[], sortByOption: string) => {

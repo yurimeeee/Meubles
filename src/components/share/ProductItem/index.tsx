@@ -6,7 +6,7 @@ import Link from 'next/link';
 import theme from '@styles/theme';
 
 import { MediumFont, RegularFont } from '@components/styled/StyledComponents';
-import { Product } from '@utils/productData';
+import { Product } from '@type/types';
 import { numberFormatter } from '@utils/formatter';
 
 type ProductItemProps = {

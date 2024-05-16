@@ -4,13 +4,14 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 import * as S from '../search.style';
 
 import theme from '@styles/theme';
-import { Product, productData } from '@utils/productData';
+import { productData } from '@utils/productData';
 import { FlexBox, RegularFont, SemiBoldFont, NoResults } from '@components/styled/StyledComponents';
 import ProductItem from '@components/share/ProductItem';
 import StyledSelect from '@components/styled/StyledSelect';
 
 import SearchIcon from '@assets/icons/SearchIcon';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { Product } from '@type/types';
 
 export default function SearchPage({ params }: { params: { keyword: string } }) {
   const [data, setData] = useState<Product[]>([]);
