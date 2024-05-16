@@ -35,6 +35,10 @@ const typography = {
     fontSize: "16px",
     lineHeight: "24px",
   },
+  sm: {
+    fontSize: "14px",
+    lineHeight: "20px",
+  },
 };
 
 const colors = {

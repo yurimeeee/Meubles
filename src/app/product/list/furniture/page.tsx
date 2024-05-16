@@ -5,7 +5,7 @@ import ProductList from '@components/feature/Product/ProductList';
 
 const categoryList = ['SOFAS', 'CHAIRS', 'TABLES', 'STORAGE', 'SHELF'];
 
-const ProductPage = () => {
+const FurnitureProductPage = () => {
   return (
     <P.Wrapper>
       <ProductList categoryListData={categoryList} uCate={'FURNITURE'} />
@@ -13,4 +13,4 @@ const ProductPage = () => {
   );
 };
 
-export default ProductPage;
+export default FurnitureProductPage;

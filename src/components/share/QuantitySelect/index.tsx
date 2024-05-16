@@ -6,7 +6,6 @@ import Link from 'next/link';
 import theme from '@styles/theme';
 
 import { FlexBox, MediumFont, RegularFont } from '@components/styled/StyledComponents';
-import { Product } from '@utils/productData';
 
 import PlusIcon from '@assets/icons/PlusIcon';
 import MinusIcon from '@assets/icons/MinusIcon';
@@ -69,6 +68,11 @@ const Wrapper = styled.div<{ $buttonSize?: number; $margin?: string }>`
   margin: ${({ $margin }) => ($margin ? $margin : '0')};
   background: ${theme.colors.whiteColor};
   border: 1.5px solid ${theme.colors.grayBorderColor};
+
+  ${theme.devices.mobile} {
+    width: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize * 0.8 * 3}px` : '72px')};
+    height: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize * 0.8}px` : '24px')};
+  }
 `;
 const Number = styled.div<{ $buttonSize?: number; $fontSize?: number }>`
   display: flex;
@@ -78,6 +82,12 @@ const Number = styled.div<{ $buttonSize?: number; $fontSize?: number }>`
   height: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize}px` : '36px')};
   font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize}px` : '16px')};
   border: 1.5px solid ${theme.colors.grayBorderColor};
+
+  ${theme.devices.mobile} {
+    width: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize * 0.8 * 3}px` : '24px')};
+    height: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize * 0.8}px` : '24px')};
+    font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize * 0.8}px` : '12px')};
+  }
 `;
 const Button = styled.button<{ $buttonSize?: number }>`
   display: flex;
@@ -89,5 +99,15 @@ const Button = styled.button<{ $buttonSize?: number }>`
   svg {
     width: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize / 2}px` : '22px')};
     height: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize / 2}px` : '22px')};
+  }
+
+  ${theme.devices.mobile} {
+    width: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize * 0.8 - 2}px` : '22px')};
+    height: ${({ $buttonSize }) => ($buttonSize ? `${$buttonSize * 0.8 - 2}px` : '22px')};
+
+    svg {
+      width: ${({ $buttonSize }) => ($buttonSize ? `${($buttonSize * 0.8) / 2}px` : '12px')};
+      height: ${({ $buttonSize }) => ($buttonSize ? `${($buttonSize * 0.8) / 2}px` : '12px')};
+    }
   }
 `;

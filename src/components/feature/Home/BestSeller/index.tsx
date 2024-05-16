@@ -15,7 +15,7 @@ const BestSeller = () => {
     <Wrapper>
       <Title>Top Seller</Title>
       <SubTitle>지금 가장 인기 있는</SubTitle>
-      <MoreView href={'/'}>
+      <MoreView href={'/product/list/best'}>
         MORE VIEWS
         <ArrowIcon />
       </MoreView>

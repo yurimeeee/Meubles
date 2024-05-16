@@ -10,6 +10,8 @@ import { toast } from 'react-toastify';
 import * as C from './cart.style';
 import theme from '@styles/theme';
 import { numberFormatter } from '@utils/formatter';
+import { CartItem, CheckedList } from '@type/types';
+
 import { FlexBox, RegularFont, SemiBoldFont } from '@components/styled/StyledComponents';
 import StyledButton from '@components/styled/StyledButton';
 import TableHeader from '@components/share/Table/TableHeader';
@@ -18,9 +20,8 @@ import { TableBody, TableFooter } from '@components/share/Table/table.style';
 import Loader from '@components/share/Loader';
 import MobileCartList from '@components/feature/Cart/MobileCartList';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
-
-type CartItem = { id: number; brand: string; name: string; price: string; quantity: number; img: string; docId: string }; // 장바구니 리스트 DATA
-type CheckedList = { id: number; checked: boolean; docId: string }; // 장바구니에서 체크된 상품 리스트
+import { useRecoilState } from 'recoil';
+import { cartItemsState } from '@recoil/atoms';
 
 const Header = [
   // { label: '', minWidth: 45, width: 3 },
@@ -41,59 +42,28 @@ export default function CartPage() {
   const [quantity, setQuantity] = useState<any>();
   const [cartItem, setCartItem] = useState<CartItem[] | null>(null);
   const [checkedList, setCheckedList] = useState<CheckedList[]>([]);
+  const [cartItems, setCartItems] = useRecoilState(cartItemsState);
 
   useEffect(() => {
-    let unsubscribe: Unsubscribe | null = null;
-    const fetchCartList = async () => {
-      //쿼리생성
-      const cartDataQuery = query(
-        collection(db, `cart/${auth?.currentUser?.uid}/items`) //컬렉션 지정
-      );
-      unsubscribe = await onSnapshot(cartDataQuery, (snapshot) => {
-        const cartList = snapshot.docs.map((doc) => {
-          const { id, brand, name, price, quantity, img } = doc.data();
-          return {
-            id,
-            brand,
-            name,
-            price,
-            quantity,
-            img,
-            docId: doc.id,
-          };
-        });
-        setCartItem(cartList);
-
-        setQuantity(
-          cartList.map((item) => ({
-            id: item?.id,
-            quantity: item?.quantity,
-          }))
-        );
-      });
-    };
-
-    fetchCartList();
-    return () => {
-      unsubscribe && unsubscribe();
-      // 사용자가 타임라인을 보고 있을때만 작동
-    };
+    setQuantity(
+      cartItems.map((item) => ({
+        id: item?.id,
+        quantity: item?.quantity,
+      }))
+    );
   }, []);
-
-  // console.log('cartItem', cartItem);
-  // console.log('quantity:::', quantity);
 
   // 페이지 로드 시 장바구니 데이터로 checkedList 상태에 설정
   useEffect(() => {
-    if (cartItem) {
-      const tmp = cartItem.map((item) => ({
+    if (cartItems) {
+      const tmp = cartItems.map((item) => ({
         id: item?.id,
         checked: false,
         docId: item?.docId,
       }));
       setCheckedList(tmp as CheckedList[]);
     }
-  }, [cartItem]);
+  }, [cartItems]);
 
   // checkedList 모두 체크되는 경우, AllItemsChecked => true로 업데이트
   useEffect(() => {
@@ -187,7 +157,7 @@ export default function CartPage() {
   return (
     <C.Wrapper>
       <FlexBox $margin="0 0 20px">
-        <RegularFont $fontSize={16}>CART ({cartItem?.length})</RegularFont>
+        <RegularFont $fontSize={16}>CART ({cartItems?.length})</RegularFont>
       </FlexBox>
       {/* <C.PCCart>
         <TableHeader headers={Header} checkAllItems={checkAllItems} allItemsChecked={allItemsChecked} />
@@ -276,10 +246,10 @@ export default function CartPage() {
           </FlexBox>
         </C.CartListHeader>
         <C.CartList>
-          {cartItem === null ? (
+          {cartItems === null ? (
             <Loader />
-          ) : cartItem.length > 0 && quantity ? (
-            cartItem?.map((item, index) => (
+          ) : cartItems.length > 0 && quantity ? (
+            cartItems?.map((item, index) => (
               <MobileCartList
                 key={index}
                 item={item}
@@ -303,11 +273,11 @@ export default function CartPage() {
           <C.TotalPrice>
             <C.RowTitle>합계</C.RowTitle>
 
-            <C.RowText>{cartItem && `${numberFormatter((cartItem?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000)}`}</C.RowText>
+            <C.RowText>{cartItems && `${numberFormatter((cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000)}`}</C.RowText>
           </C.TotalPrice>
           <C.RowFlex>
             <C.RowTitle>상품 구매금액</C.RowTitle>
-            <C.RowText>{numberFormatter(cartItem?.reduce((total, item) => total + Number(item.price) * item.quantity, 0))}</C.RowText>
+            <C.RowText>{numberFormatter(cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0))}</C.RowText>
           </C.RowFlex>
           <C.RowFlex>
             <C.RowTitle>배송비</C.RowTitle>

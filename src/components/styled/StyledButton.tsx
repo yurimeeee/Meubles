@@ -63,11 +63,16 @@ const Button = styled.button<IButton>`
   border: ${({ $border }) => $border};
   border-radius: ${({ $borderRadius }) => $borderRadius}px;
   margin: ${({ $margin }) => $margin};
-  background-color: ${({ $bgColor }) => $bgColor};
+  /* background-color: ${({ $bgColor }) => $bgColor}; */
+  background-color: ${({ disabled, $bgColor }) =>
+    !disabled ? ($bgColor === '#FFFFFF' ? theme.colors.whiteColor : lighten(0.01, $bgColor ?? theme.colors.blackColor)) : theme.colors.grayBorderColor};
+
   cursor: ${({ $cursor }) => $cursor};
 
   &:hover {
-    background-color: ${({ disabled, $bgColor }) => !disabled && ($bgColor === '#FFFFFF' ? theme.colors.whiteColor : lighten(0.01, $bgColor ?? theme.colors.blackColor))};
+    /* background-color: ${({ disabled }) => (!disabled ? theme.colors.whiteColor : lighten(0.01, theme.colors.blackColor))}; */
+    background-color: ${({ disabled, $bgColor }) =>
+      !disabled ? ($bgColor === '#FFFFFF' ? theme.colors.whiteColor : lighten(0.01, $bgColor ?? theme.colors.blackColor)) : theme.colors.grayBorderColor};
     opacity: 0.6;
   }
 

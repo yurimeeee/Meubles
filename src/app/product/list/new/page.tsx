@@ -3,14 +3,12 @@
 import * as P from '../../product.style';
 import ProductList from '@components/feature/Product/ProductList';
 
-const categoryList = ['SOFAS', 'CHAIRS', 'TABLES', 'STORAGE', 'SHELF'];
-
-const ProductPage = () => {
+const NewProductPage = () => {
   return (
     <P.Wrapper>
-      <ProductList categoryListData={categoryList} NEW />
+      <ProductList NEW />
     </P.Wrapper>
   );
 };
 
-export default ProductPage;
+export default NewProductPage;

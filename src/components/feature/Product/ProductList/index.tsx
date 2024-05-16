@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import theme from '@styles/theme';
-import { Product, productData } from '@utils/productData';
+import { Product } from '@type/types';
+import { productData } from '@utils/productData';
 import ProductItem from '@components/share/ProductItem';
 import StyledSelect from '@components/styled/StyledSelect';
 
@@ -12,105 +13,53 @@ type ProductListProps = {
   categoryListData?: string[];
   uCate?: string;
   NEW?: boolean;
+  BEST?: boolean;
   searchData?: Product[];
 };
 
-const ProductList = ({ categoryListData, uCate, NEW, searchData }: ProductListProps) => {
-  const [category, setCategory] = useState<string>('NEW');
+const ProductList = ({ categoryListData, uCate, NEW, BEST, searchData }: ProductListProps) => {
+  const [active, setActive] = useState<string>('ALL');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [sortByOption, setSortByOption] = useState('최신순');
-  const [active, setActive] = useState<string>('ALL');
-
-  // useEffect(() => {
-  //   if (searchData) {
-  //     return (
-  //       <Wrapper>
-  //         {filteredProducts.length > 0 && (
-  //           <FlexBox>
-  //             <CategoryList>
-  //               <CategoryItem
-  //                 onClick={() => {
-  //                   handleALLClick();
-  //                   setActive('ALL');
-  //                 }}
-  //                 $Active={active === 'ALL'}
-  //               >
-  //                 ALL
-  //               </CategoryItem>
-  //               <CategoryItem
-  //                 onClick={() => {
-  //                   handleNEWClick();
-  //                   setActive('ALL');
-  //                 }}
-  //                 $Active={active === 'NEW'}
-  //               >
-  //                 NEW
-  //               </CategoryItem>
-  //               {categoryListData?.map((item, idx) => (
-  //                 <CategoryItem
-  //                   key={idx}
-  //                   onClick={() => {
-  //                     handleCategoryClick(item);
-  //                     setActive(item);
-  //                   }}
-  //                   $Active={active === item}
-  //                 >
-  //                   {item}
-  //                 </CategoryItem>
-  //               ))}
-  //             </CategoryList>
-  //             <SelectWrap>
-  //               <StyledSelect
-  //                 onChange={(e) => {
-  //                   const newValue = e.target.value;
-  //                   setSortByOption(newValue);
-  //                 }}
-  //                 options={[
-  //                   { value: '최신순', label: '최신순' },
-  //                   { value: '상품명', label: '상품명' },
-  //                   { value: '높은가격', label: '높은가격' },
-  //                   { value: '낮은가격', label: '낮은가격' },
-  //                 ]}
-  //                 value={sortByOption}
-  //                 width={86}
-  //               />
-  //             </SelectWrap>
-  //           </FlexBox>
-  //         )}
-  //         <ProductWrap>
-  //           {filteredProducts.map((item, idx) => (
-  //             <ProductItem key={idx} data={item} />
-  //           ))}
-  //         </ProductWrap>
-  //       </Wrapper>
-  //     );
-  //   }
-  // }, [searchData]);
 
   useEffect(() => {
-    if (!NEW) {
+    if (categoryListData) {
+      // categoryListData 있는 경우, uCate로 필터링
       setFilteredProducts(productData.filter((product) => product.u_category === uCate));
-    } else {
+    } else if (NEW) {
+      // NEW 페이지 => new로 필터링
       setFilteredProducts(productData.filter((product) => product.new === true));
+    } else if (BEST) {
+      // BEST 페이지 => best 필터링
+      setFilteredProducts(productData.filter((product) => product.best === true));
     }
 
+    // 검색 결과 있는 경우 filteredProducts 설정
     if (searchData) {
       setFilteredProducts(searchData);
     }
   }, []);
 
-  const handleCategoryClick = (clickedCategory: string) => {
-    setCategory(clickedCategory);
+  // 카테고리 클릭 시, clickedCategory 값으로 필터링
+  const handleCategoryFilter = (clickedCategory: string) => {
     const tmp = productData.filter((product) => product.u_category === uCate && product.l_category === clickedCategory);
     setFilteredProducts(tmp);
-  };
-  const handleALLClick = () => {
-    setFilteredProducts(productData.filter((product) => product.u_category === uCate));
-  };
-  const handleNEWClick = () => {
-    setFilteredProducts(productData.filter((product) => product.u_category === uCate && product.new === true));
+    setActive(clickedCategory);
   };
 
+  // 모든 아이템 보기
+  const handleAllItemsView = () => {
+    setFilteredProducts(productData.filter((product) => product.u_category === uCate));
+    setActive('ALL');
+  };
+
+  // 신상품 필터링
+  const handleNewItemsView = () => {
+    setFilteredProducts(productData.filter((product) => product.u_category === uCate && product.new === true));
+    setActive('NEW');
+  };
+
+  // 필터링 셀렉트
   useEffect(() => {
     if (sortByOption === '최신순' && filteredProducts.length > 0) {
       const sortedData = [...filteredProducts].sort((a, b) => b.id - a.id);
@@ -134,38 +83,31 @@ const ProductList = ({ categoryListData, uCate, NEW, searchData }: ProductListPr
     <Wrapper>
       {filteredProducts.length > 0 && (
         <FlexBox>
-          <CategoryList>
-            <CategoryItem
-              onClick={() => {
-                handleALLClick();
-                setActive('ALL');
-              }}
-              $Active={active === 'ALL'}
-            >
-              ALL
-            </CategoryItem>
-            <CategoryItem
-              onClick={() => {
-                handleNEWClick();
-                setActive('ALL');
-              }}
-              $Active={active === 'NEW'}
-            >
-              NEW
-            </CategoryItem>
-            {categoryListData?.map((item, idx) => (
-              <CategoryItem
-                key={idx}
-                onClick={() => {
-                  handleCategoryClick(item);
-                  setActive(item);
-                }}
-                $Active={active === item}
-              >
-                {item}
+          {/* categoryListData 가 있는 경우에만 카테고리 렌더링 */}
+          {categoryListData && (
+            <CategoryList>
+              <CategoryItem onClick={handleAllItemsView} $Active={active === 'ALL'}>
+                ALL
+                <ActiveBar $Active={active === 'ALL'} />
               </CategoryItem>
-            ))}
-          </CategoryList>
+              <CategoryItem onClick={handleNewItemsView} $Active={active === 'NEW'}>
+                NEW
+                <ActiveBar $Active={active === 'NEW'} />
+              </CategoryItem>
+              {categoryListData?.map((item, idx) => (
+                <CategoryItem
+                  key={idx}
+                  onClick={() => {
+                    handleCategoryFilter(item);
+                  }}
+                  $Active={active === item}
+                >
+                  {item}
+                  <ActiveBar $Active={active === item} />
+                </CategoryItem>
+              ))}
+            </CategoryList>
+          )}
           <SelectWrap>
             <StyledSelect
               onChange={(e) => {
@@ -241,6 +183,18 @@ const CategoryItem = styled.li<{ $Active: boolean }>`
     font-size: 14px;
     margin-bottom: 10px;
   }
+`;
+const ActiveBar = styled.div<{ $Active: boolean }>`
+  width: 0px;
+  height: 1.5px;
+  bottom: -2px;
+  transition: 0.3s ease-out;
+  ${({ $Active }) =>
+    $Active &&
+    css`
+      width: 100%;
+      background-color: ${theme.colors.blackColor}}
+    `};
 `;
 
 const ProductWrap = styled.div`

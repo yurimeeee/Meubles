@@ -2,12 +2,12 @@
 
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@lib/firebase';
 import * as L from './login.style';
 
 import theme from '@styles/theme';
-import { FlexBox } from '@components/styled/StyledComponents';
+import { FlexBox, RegularFont } from '@components/styled/StyledComponents';
 import StyledInput from '@components/styled/StyledInput';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
 import StyledButton from '@components/styled/StyledButton';
@@ -94,6 +94,26 @@ export default function Login() {
     }
   };
 
+  // 비밀번호 변경 이메일 발송
+  const onChangePassword = async () => {
+    try {
+      // const provider = new GoogleAuthProvider();
+      await sendPasswordResetEmail(auth, inputs.email)
+        .then(() => {
+          // Password reset email sent!
+          alert('비밀번호 재설정 이메일이 발송되었습니다.');
+          console.log('비밀번호 재설정 이메일이 성공적으로 보내졌습니다.');
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          // ..
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <L.Wrapper>
       <L.Form>
@@ -115,6 +135,7 @@ export default function Login() {
           onClick={handleGoogleLogin}
         />
       </FlexBox>
+      <RegularFont onClick={onChangePassword}>Have you forgotten your password?</RegularFont>
     </L.Wrapper>
   );
 }

@@ -20,6 +20,12 @@ export const Wrapper = styled.div`
     padding: 100px 0 0;
     gap: 60px;
   }
+
+  ${theme.devices.mobile} {
+    padding: 20px 20px 0;
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 export const Info = styled.div`
   padding-left: 92px;
@@ -35,6 +41,10 @@ export const ImgBox = styled.div`
   width: 100%;
   max-width: 460px;
   min-width: 310px;
+
+  ${theme.devices.mobile} {
+    max-width: 680px;
+  }
 `;
 export const MainWrap = styled.div`
   display: flex;
@@ -62,7 +72,7 @@ export const SubImgList = styled.div`
   ${theme.devices.mobile} {
     .swiper-slide{
     width: 100%;
-    max-width: 70px;
+    max-width: 162px;
     }
   }
 `;
@@ -74,9 +84,19 @@ export const SubImg = styled.img`
   object-fit: cover;
   background: ${theme.colors.whiteColor};
   aspect-ratio: 1/1;
+
+  ${theme.devices.mobile} {
+    max-width: 162px;
+  }
 `;
 export const Brand = styled(MediumFont)`
-  ${theme.typography.h7}
+  ${theme.typography.h6};
+  color: ${theme.colors.darkGrayFontColor};
+  text-decoration: underline;
+
+  ${theme.devices.mobile} {
+    ${theme.typography.body};
+  }
 `;
 export const Name = styled(BoldFont)`
   ${theme.typography.h4};
@@ -88,6 +108,7 @@ export const Name = styled(BoldFont)`
   }
   ${theme.devices.mobile} {
     ${theme.typography.h5};
+    margin: 2px 0 10px;
   }
 `;
 export const Price = styled(MediumFont)`
@@ -95,37 +116,24 @@ export const Price = styled(MediumFont)`
   margin-bottom: 108px;
 
   ${theme.devices.tablet} {
-    ${theme.typography.h7}
+    ${theme.typography.body}
     margin-bottom: 58px;
   }
   ${theme.devices.mobile} {
-    ${theme.typography.h7}
-    margin-bottom: 58px;
+    ${theme.typography.body}
+    margin-bottom: 24px;
   }
 `;
 export const TotalPrice = styled(MediumFont)`
   ${theme.typography.h6}
   margin: 20px 0 24px;
 `;
-export const AccordionWrap = styled.div`
- * {
-  border: none !important;
-  background: none;
-  font-size: 14px;
-  line-height: 1.4;
+export const QuantityWrap = styled.div`
+ ${theme.devices.mobile} {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   }
-
-  .MuiPaper-root.MuiPaper-elevation {
-      max-width: 450px;
-      border-bottom:  1px solid ${theme.colors.blackColor} !important;
-      /* margin-top: 45px; */
-    }
-    .MuiCollapse-root.MuiCollapse-vertical{
-      border-bottom:  1px solid ${theme.colors.blackColor} !important;
-    }
-    /* .MuiAccordionSummary-content{
-      border-bottom:  1px solid ${theme.colors.blackColor} !important;
-    } */
 `;
 export const RowFlex = styled.div`
   display: flex;

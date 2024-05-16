@@ -1,25 +1,4 @@
-export type Product = {
-  u_category: string;
-  l_category: string;
-  brand: string;
-  name: string;
-  price: string;
-  desc?: string;
-  detail: {
-    designer?: string;
-    color?: string;
-    size?: string[];
-    texture?: string[];
-    company: string;
-    country: string;
-  };
-  mainImg: string;
-  subImg: string[];
-  best: boolean;
-  new: boolean;
-  keyword: string;
-  id: number;
-};
+import { Product } from "@type/types";
 
 export const productData: Product[] = [
   {

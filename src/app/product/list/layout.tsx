@@ -3,7 +3,7 @@
 import PageTitle from '@components/share/PageTitle';
 import { Wrapper } from '@components/styled/StyledComponents';
 import { usePathname } from 'next/navigation';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ProductListLayout({
   children,
@@ -13,7 +13,7 @@ export default function ProductListLayout({
   const [title, setTitle] = useState<string>('');
   const pathname = usePathname();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (pathname.includes('furniture')) {
       setTitle('FURNITURE');
     } else if (pathname.includes('lighting')) {
@@ -22,6 +22,8 @@ export default function ProductListLayout({
       setTitle('SOUNDS');
     } else if (pathname.includes('new')) {
       setTitle('NEW');
+    } else if (pathname.includes('best')) {
+      setTitle('BEST');
     }
   }, [pathname]);
 

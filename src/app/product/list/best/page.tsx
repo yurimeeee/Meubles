@@ -3,14 +3,12 @@
 import * as P from '../../product.style';
 import ProductList from '@components/feature/Product/ProductList';
 
-const categoryList = ['SPEAKER'];
-
-const SoundsProductPage = () => {
+const BestProductPage = () => {
   return (
     <P.Wrapper>
-      <ProductList categoryListData={categoryList} uCate={'SOUNDS'} />
+      <ProductList BEST />
     </P.Wrapper>
   );
 };
 
-export default SoundsProductPage;
+export default BestProductPage;

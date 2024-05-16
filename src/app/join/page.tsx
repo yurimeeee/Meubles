@@ -3,7 +3,7 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { auth, db } from '@lib/firebase';
 import { toast } from 'react-toastify';
 
@@ -13,6 +13,7 @@ import { Address } from 'react-daum-postcode';
 import * as J from './join.style';
 import theme from '@styles/theme';
 import { FlexBox } from '@components/styled/StyledComponents';
+import StyledPhoneNumber from '@components/styled/StyledPhoneNumber';
 import StyledInput from '@components/styled/StyledInput';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
 import StyledButton from '@components/styled/StyledButton';
@@ -29,6 +30,7 @@ export default function Join() {
   const [modalState, setModalState] = useState<boolean>(false);
   const [zipCode, setZipcode] = useState<string>('');
   const [roadAddress, setRoadAddress] = useState<string>('');
+  const [iseAccountEmailCheck, setIseAccountEmailCheck] = useState<boolean>(false);
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
@@ -36,6 +38,7 @@ export default function Join() {
     name: '',
     address: roadAddress,
     addressDetail: '',
+    phone: '',
   });
   const [termsList, setTermsList] = useState<TermsList>({
     term1: false,
@@ -56,26 +59,6 @@ export default function Join() {
     [inputs]
   );
 
-  // 각 체크박스 항목 클릭 시 termsList 업데이트
-  const dddddd = useCallback(async () => {
-    // const { data } = await auth.fetchSignInMethodsForEmail(email);
-    // if (data && data.length > 0) {
-    //   alert('이미 사용 중인 이메일입니다.');
-    //   return;
-    // }
-    // const dbRef = ref(getDatabase());
-    // get(child(dbRef, `users/${userId}`))
-    //   .then((snapshot) => {
-    //     if (snapshot.exists()) {
-    //       console.log(snapshot.val());
-    //     } else {
-    //       console.log('No data available');
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
-  }, [inputs.email]);
   // 각 체크박스 항목 클릭 시 termsList 업데이트
   const handleTermsChecked = useCallback(
     (detail: keyof TermsList) => () => {
@@ -126,9 +109,31 @@ export default function Join() {
     setModalState(false);
   };
 
+  // 중복 검사
+  const handleAccountEmailCheck = async () => {
+    // const itemsCollectionRef = collection(db, 'users');
+    const q = query(collection(db, 'users'), where('email', '==', inputs.email));
+    const querySnapshot = await getDocs(q);
+
+    let exists = false;
+    // 가입된 이메일 중 중복 이메일 여부 확인
+    for (const doc of querySnapshot.docs) {
+      exists = true;
+      break; // 이미 가입된 이메일일 경우 break
+    }
+
+    if (exists) {
+      alert('이미 가입된 이메일입니다.');
+      setIseAccountEmailCheck(false);
+    } else {
+      alert('사용가능한 이메일입니다.');
+      setIseAccountEmailCheck(true);
+    }
+  };
+
   // 회원가입 버튼 클릭 시 작동
   const handleSignin = useCallback(() => {
-    const { email, password, passwordCheck, name, address, addressDetail } = inputs;
+    const { email, password, passwordCheck, name, address, addressDetail, phone } = inputs;
     const { term1, term2 } = termsList;
 
     if (email === '' || password === '' || passwordCheck === '' || name === '') {
@@ -138,6 +143,11 @@ export default function Join() {
     if (!term1 || !term2) {
       // 필수 동의 항목 미체크 시 리턴
       alert('필수 동의 항목에 체크해주세요');
+      return;
+    }
+
+    if (password !== passwordCheck) {
+      alert('비밀번호가 일치하지 않습니다');
       return;
     }
 
@@ -156,10 +166,11 @@ export default function Join() {
           name,
           address,
           addressDetail,
+          phone,
         });
         // toast.info(`${user.email} 님 회원가입 성공! 자동 로그인 되었습니다`);
-        alert(`${user.email} 님 회원가입 성공! 자동 로그인 되었습니다`);
-        router.push('/login');
+        alert(`${name} 님 반갑습니다!`);
+        router.push('/');
       })
       .catch((error) => {
         if (error.code === 'auth/invalid-email') {
@@ -175,7 +186,7 @@ export default function Join() {
     <J.Wrapper>
       <J.Form>
         <J.InputWrap>
-          <StyledInput placeholder="EMAIL *" required name="email" value={inputs.email} onChange={onChange} border />
+          <StyledInput placeholder="EMAIL *" required type="email" name="email" value={inputs.email} onChange={onChange} border />
           <StyledButton
             title="중복 검사"
             fontSize={12}
@@ -184,6 +195,8 @@ export default function Join() {
             bgColor={theme.colors.lightGrayBgColor}
             fontColor={theme.colors.blackColor}
             border={`1px solid ${theme.colors.blackColor}`}
+            onClick={handleAccountEmailCheck}
+            disabled
           />
         </J.InputWrap>
         <StyledInput placeholder="PASSWORD *" required type="password" name="password" value={inputs.password} onChange={onChange} />
@@ -210,6 +223,8 @@ export default function Join() {
           />
         </J.InputWrap>
         <StyledInput placeholder="DETAILED ADDRESS" name="addressDetail" value={inputs.addressDetail} onChange={onChange} />
+        <StyledPhoneNumber placeholder="PHONENUMBER *" name="phone" value={inputs.phone} onChange={onChange} />
+
         {modalState && (
           <J.Modal>
             <J.ModalTitle>우편번호 검색</J.ModalTitle>

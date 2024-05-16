@@ -34,7 +34,7 @@ const NewProduct = () => {
             # Sculptural
           </Keyword>
         </KeywordList>
-        <MoreView href={'/'}>
+        <MoreView href={'/product/list/new'}>
           MORE VIEWS
           <ArrowIcon />
         </MoreView>

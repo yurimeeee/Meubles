@@ -5,12 +5,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import styled, { css } from 'styled-components';
 import Link from 'next/link';
 import Image from 'next/image';
-import { auth } from '@lib/firebase';
+import { auth, db } from '@lib/firebase';
 import { useRecoilState } from 'recoil';
-import { searchedItems } from '@recoil/atoms';
+import { cartItemsState, searchedItems } from '@recoil/atoms';
 
 import theme from '@styles/theme';
-import { Product, productData } from '@utils/productData';
+import { Product } from '@type/types';
+import { productData } from '@utils/productData';
 import { BoldFont, FlexBox, RegularFont, SemiBoldFont } from '@components/styled/StyledComponents';
 import ThumbnailItem from '@components/share/ThumbnailItem';
 import BlankLoader from '@components/share/BlankLoader';
@@ -26,6 +27,9 @@ import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { IoMdClose } from 'react-icons/io';
 import { GrMenu } from 'react-icons/gr';
 import { MdLogout } from 'react-icons/md';
+import { collection, getDocs, onSnapshot, query } from 'firebase/firestore';
+import { Unsubscribe } from 'firebase/auth';
+import StyledBadge from '@components/styled/StyledBadge';
 
 const Header = () => {
   const pathname = usePathname();
@@ -33,9 +37,9 @@ const Header = () => {
   const [active, setActive] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   // const [searchedList, setSearchedList] = useRecoilState<Product[]>(searchedItems);
   const [searchedList, setSearchedList] = useRecoilState(searchedItems);
+  const [cartItems, setCartItems] = useRecoilState(cartItemsState);
 
   const [data, setData] = useState<Product[]>([]);
 
@@ -46,8 +50,50 @@ const Header = () => {
       setActive('LIGHTING');
     } else if (pathname.includes('sounds')) {
       setActive('SOUNDS');
+    } else if (pathname.includes('new')) {
+      setActive('NEW');
+    } else if (pathname.includes('best')) {
+      setActive('BEST');
     }
   }, [pathname]);
+
+  useEffect(() => {
+    let unsubscribe: Unsubscribe | null = null;
+    const fetchCartList = async () => {
+      //쿼리생성
+      const cartDataQuery = query(
+        collection(db, `cart/${auth?.currentUser?.uid}/items`) //컬렉션 지정
+      );
+      unsubscribe = await onSnapshot(cartDataQuery, (snapshot) => {
+        const cartList = snapshot.docs.map((doc) => {
+          const { id, brand, name, price, quantity, img } = doc.data();
+          return {
+            id,
+            brand,
+            name,
+            price,
+            quantity,
+            img,
+            docId: doc.id,
+          };
+        });
+        setCartItems(cartList);
+
+        // setQuantity(
+        //   cartList.map((item) => ({
+        //     id: item?.id,
+        //     quantity: item?.quantity,
+        //   }))
+        // );
+      });
+    };
+
+    fetchCartList();
+    return () => {
+      unsubscribe && unsubscribe();
+      // 사용자가 타임라인을 보고 있을때만 작동
+    };
+  }, []);
 
   const router = useRouter();
 
@@ -113,12 +159,6 @@ const Header = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (auth.currentUser) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
   return (
     <Wrapper>
       <Container>
@@ -175,6 +215,9 @@ const Header = () => {
           </Logo>
         </RowFlexBox>
         <Menu>
+          <MenuItem href={'/product/list/best'} $Active={active === 'BEST'}>
+            BEST
+          </MenuItem>
           <MenuItem href={'/product/list/new'} $Active={active === 'NEW'}>
             NEW
           </MenuItem>
@@ -190,29 +233,24 @@ const Header = () => {
         </Menu>
         <RowFlexBox>
           <GNB>
-            {/* {isLoggedIn && (
-              <GNBItem href={'/login'} onClick={handleLogout}>
-                로그아웃
-              </GNBItem>
-            )} */}
-            {auth.currentUser && (
-              <GNBItem href={'/login'} onClick={handleLogout}>
-                로그아웃
-              </GNBItem>
-            )}
+            <PCLogout>
+              {auth.currentUser && (
+                <GNBItem href={'/login'} onClick={handleLogout}>
+                  LOGOUT
+                </GNBItem>
+              )}
+            </PCLogout>
 
-            <GNBItem href={auth.currentUser ? '/mypage' : '/login'}>
+            <GNBItem href={auth.currentUser ? '/mypage' : '/login'} title="PROFILE">
               <Icon src={User} alt="프로필" />
             </GNBItem>
             <GNBItem href={'/cart'}>
-              <Icon src={Cart} alt="장바구니" />
+              <Icon src={Cart} alt="장바구니" title="CART" />
+              {cartItems?.length > 0 && <StyledBadge text={cartItems.length} left={14} top={12} />}
             </GNBItem>
             <GNBButton>
-              <Icon src={Search} alt="검색" onClick={toggleSearchModal} />
+              <Icon src={Search} alt="검색" onClick={toggleSearchModal} title="SEARCH" />
             </GNBButton>
-            {/* <MenuButton>
-            <GrMenu size={24} />
-          </MenuButton> */}
           </GNB>
         </RowFlexBox>
       </Container>
@@ -289,6 +327,10 @@ export const Wrapper = styled.header`
   z-index: 5;
   transition: 0.5s;
   background-color: ${theme.colors.lightGrayBgColor};
+
+  ${theme.devices.mobile} {
+    padding: 10px 20px 20px;
+  }
 `;
 const Container = styled.div`
   display: flex;
@@ -321,10 +363,31 @@ const GNB = styled.nav`
   justify-content: end;
   align-items: center;
   gap: 20px;
+
+  ${theme.devices.mobile} {
+    gap: 12px;
+  }
 `;
-const GNBItem = styled(Link)``;
+const GNBItem = styled(Link)`
+  position: relative;
+  font-size: 12px;
+
+  ${theme.devices.mobile} {
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+`;
 const GNBButton = styled.button`
   background: none;
+
+  ${theme.devices.mobile} {
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
 `;
 const MenuButtonWrap = styled.div`
   display: none;
@@ -347,6 +410,10 @@ const Menu = styled.ul`
   display: flex;
   align-items: center;
   gap: 30px;
+
+  ${theme.devices.tablet} {
+    gap: 20px;
+  }
 
   ${theme.devices.mobile} {
     display: none;
@@ -507,4 +574,9 @@ const MobileMenuFlex = styled.div`
   align-items: center;
   gap: 6px;
   padding: 20px;
+`;
+const PCLogout = styled.div`
+  ${theme.devices.mobile} {
+    display: none;
+  }
 `;

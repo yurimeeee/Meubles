@@ -31,35 +31,35 @@ type WrapperType = {
 };
 
 export const BoldFont = styled.div<FontType>`
-  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)} !important;
+  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)} ;
   font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize}px` : '16px')};
   line-height: ${({ $lineHeight }) => ($lineHeight ? `${$lineHeight}px` : '1.4')};
   font-family: 'AppleSDGothicNeoB', 'SF Pro Display', sans-serif;
   margin: ${({ $margin }) => ($margin ? $margin : 0)};
 `;
 export const SemiBoldFont = styled.div<FontType>`
-  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)}!important;
+  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)};
   font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize}px` : '16px')};
   line-height: ${({ $lineHeight }) => ($lineHeight ? `${$lineHeight}px` : '1.4')};
   font-family: 'AppleSDGothicNeoSB', 'SF Pro Display', sans-serif;
   margin: ${({ $margin }) => ($margin ? $margin : 0)};
 `;
 export const MediumFont = styled.div<FontType>`
-  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)}!important;
+  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)};
   font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize}px` : '16px')};
   line-height: ${({ $lineHeight }) => ($lineHeight ? `${$lineHeight}px` : '1.4')};
   font-family: 'AppleSDGothicNeoM', 'SF Pro Display', sans-serif;
   margin: ${({ $margin }) => ($margin ? $margin : 0)};
 `;
 export const RegularFont = styled.div<FontType>`
-  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)}!important;
+  color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)};
   font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize}px` : '16px')};
   line-height: ${({ $lineHeight }) => ($lineHeight ? `${$lineHeight}px` : '1.4')};
   font-family: 'AppleSDGothicNeoR', 'SF Pro Display', sans-serif;
   margin: ${({ $margin }) => ($margin ? $margin : 0)};
 `;
 // export const LightFont = styled.div<FontType>`
-//   color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)} !important;
+//   color: ${({ $fontColor, theme }) => ($fontColor ? $fontColor : theme.colors.blackColor)} ;
 //   font-size: ${({ $fontSize }) => ($fontSize ? `${$fontSize}px` : '16px')};
 //   line-height: ${({ $lineHeight }) => ($lineHeight ? `${$lineHeight}px` : '1.4')};
 //   font-family: 'PretendardLight', 'SF Pro Display', sans-serif;
