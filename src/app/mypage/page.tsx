@@ -3,12 +3,13 @@
 import * as M from './mypage.style';
 import { useCallback, useEffect, useState } from 'react';
 import { auth, db } from '@lib/firebase';
-import { collection, doc, getDocs, query, QuerySnapshot, setDoc, where } from 'firebase/firestore';
-import { Product } from '@type/types';
+import { collection, doc, DocumentData, getDoc, getDocs, query, QuerySnapshot, setDoc, where } from 'firebase/firestore';
+import { Product, UserInfo } from '@type/types';
 import { productData } from '@utils/productData';
 import { FlexBox } from '@components/styled/StyledComponents';
 import OrderListTable from '@components/feature/Mypage/OrderListTable';
 import WishListTable from '@components/feature/Mypage/WishListTable';
+import CouponList from '@components/feature/Mypage/CouponList';
 
 const OrderListHeader = [
   // { label: '', minWidth: 45, width: 3 },
@@ -34,6 +35,24 @@ export default function Mypage() {
   const [bookmarkList, setBookmarkList] = useState<any[]>();
   const [bookmarkItems, setBookmarkItems] = useState<Product[]>();
   const [active, setActive] = useState<string>('MY ORDERS');
+  const [myInfo, setMyInfo] = useState<UserInfo | DocumentData>();
+
+  useEffect(() => {
+    try {
+      const userRef = doc(db, `users/${auth?.currentUser?.uid}`);
+
+      getDoc(userRef).then((doc) => {
+        if (doc.exists()) {
+          console.log('Document data:', doc.data());
+          setMyInfo(doc.data());
+        } else {
+          console.log('No such document!');
+        }
+      });
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,7 +83,7 @@ export default function Mypage() {
       <M.AccountWrap>
         <FlexBox $gap="12px" $flexDirection="column" $alignItems="start">
           <M.MyAccount>MY ACCOUNT</M.MyAccount>
-          <M.Welcome>반갑습니다. {auth?.currentUser?.displayName} 님!</M.Welcome>
+          <M.Welcome>반갑습니다. {myInfo?.name} 님!</M.Welcome>
         </FlexBox>
         <FlexBox $gap="8px" $flexDirection="column" $alignItems="start" $flex={0}>
           <M.SettingLink href="/mypage/setting/profile">회원 정보 수정</M.SettingLink>
@@ -90,8 +109,9 @@ export default function Mypage() {
           <M.ActiveBar $Active={active === 'WISHLIST'} />
         </M.CategoryItem>
       </M.CategoryList>
-      {/* <OrderListTable headers={OrderListHeader} data={bookmarkItems} /> */}
-      <WishListTable headers={WishListHeader} data={bookmarkItems} />
+      {active === 'MY ORDERS' && <OrderListTable headers={OrderListHeader} data={bookmarkItems} />}
+      {active === 'COUPON' && <CouponList />}
+      {active === 'WISHLIST' && <WishListTable headers={WishListHeader} data={bookmarkItems} />}
     </M.Wrapper>
   );
 }

@@ -14,6 +14,7 @@ import { FlexBox } from '@components/styled/StyledComponents';
 import StyledInput from '@components/styled/StyledInput';
 import StyledButton from '@components/styled/StyledButton';
 import StyledPhoneNumber from '@components/styled/StyledPhoneNumber';
+import { IoMdClose } from 'react-icons/io';
 
 export default function MypageSettingProfile() {
   const router = useRouter();
@@ -79,12 +80,9 @@ export default function MypageSettingProfile() {
     [inputs]
   );
 
-  const handleModalOpen = useCallback(() => {
-    setModalState(true);
-  }, []);
-
-  const handleModalClose = useCallback(() => {
-    setModalState(false);
+  // 주소검색 모달
+  const handleModalToggle = useCallback(() => {
+    setModalState(!modalState);
   }, []);
 
   // 주소 검색 기능
@@ -103,15 +101,17 @@ export default function MypageSettingProfile() {
   // 수정 버튼 클릭 시 회원 정보 수정
   const handleUserInfoUpdate = useCallback(async () => {
     const { name, address, addressDetail, phone } = inputs;
-    const uid = auth?.currentUser?.uid;
 
-    const docRef = doc(db, 'users', uid);
+    const docRef = doc(db, `users/${auth?.currentUser?.uid}`);
     await updateDoc(docRef, {
       name,
       address,
       addressDetail,
       phone,
+    }).catch((error) => {
+      alert('정보 수정에 실패했습니다. 다시 시도해주세요.');
     });
+    alert('회원 정보가 수정되었습니다.');
   }, [inputs]);
 
   // 취소 버튼 클릭 시
@@ -127,12 +127,12 @@ export default function MypageSettingProfile() {
   return (
     <J.Wrapper>
       <J.Form>
-        <StyledInput placeholder="EMAIL *" required type="email" name="email" value={auth.currentUser?.email} onChange={onChange} readOnly />
+        <StyledInput placeholder="EMAIL *" required type="email" name="email" value={inputs.email} onChange={onChange} readOnly />
         <StyledInput placeholder="NAME *" required name="name" value={inputs.name} onChange={onChange} />
         <J.InputWrap>
           <StyledInput placeholder="ADDRESS" name="address" value={inputs.address} onChange={onChange} border />
           <StyledButton
-            onClick={handleModalOpen}
+            onClick={handleModalToggle}
             title="주소 검색"
             fontSize={12}
             width={94}
@@ -149,7 +149,9 @@ export default function MypageSettingProfile() {
           <J.Modal>
             <J.ModalTitle>우편번호 검색</J.ModalTitle>
             <DaumPostcode onComplete={completeHandler} />
-            <J.ModalClose onClick={handleModalClose}>닫기</J.ModalClose>
+            <J.ModalClose onClick={handleModalToggle}>
+              <IoMdClose size={16} />
+            </J.ModalClose>
           </J.Modal>
         )}
       </J.Form>

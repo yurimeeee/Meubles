@@ -2,6 +2,7 @@
 
 import styled, { keyframes } from "styled-components";
 import theme from "@styles/theme";
+import Image from "next/image";
 
 
 export const Wrapper = styled.main`
@@ -39,4 +40,19 @@ export const MainImg = styled.div`
   animation: ${ImgMove} 6.0s forwards;
   animation-timing-function: linear;
 }
+`;
+export const Banner = styled(Image)`
+  width: 100vw;
+  /* max-width: 1280px; */
+  /* height: 362px; */
+  height: auto;
+  /* background-image: url("/images/banner.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: inherit; */
+
+  ${theme.devices.desktop}{
+    /* height: 600px; */
+  }
+
 `;

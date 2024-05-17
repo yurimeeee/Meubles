@@ -4,7 +4,7 @@ import * as P from './productDetail.style';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCookies } from 'react-cookie';
-import { addDoc, collection, getDocs, query, updateDoc, where, doc, DocumentReference, deleteDoc } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, updateDoc, where, doc, DocumentReference, deleteDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@lib/firebase';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -68,6 +68,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
     }
   }, [data]);
 
+  // 북마크 여부 확인
   useEffect(() => {
     const fetchData = async () => {
       const uid = auth?.currentUser?.uid;
@@ -87,40 +88,35 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
     }
   }, [bookmarkList]);
 
+  // 상품 북마크
   const onClickBookmarkToggle = useCallback(async () => {
-    if (!auth.currentUser) {
+    const uid = auth?.currentUser?.uid;
+
+    // 미로그인 시, 리턴
+    if (!uid) {
       alert('로그인이 필요합니다.');
-      // router.push('/login');
+      return;
     }
-    alert('tkrwp.');
 
-    if (isBookmarked) {
-      await deleteDoc(doc(db, `users/${auth?.currentUser?.uid}/bookmark/${data?.id}`));
-      setIsBookmarked(false);
-    } else {
+    // 북마크 컬렉션 참조
+    const bookmarkRef = doc(db, `users/${uid}/bookmark/${data?.id}`);
+
+    try {
+      if (isBookmarked) {
+        // 북마크 삭제
+        await deleteDoc(bookmarkRef);
+        setIsBookmarked(false);
+        alert('북마크가 삭제되었습니다.');
+      } else {
+        // 북마크 추가
+        await setDoc(bookmarkRef, { id: data?.id });
+        setIsBookmarked(true);
+        alert('북마크가 등록되었습니다.');
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error);
     }
-    // checked 값이 true인 아이템들의 docId를 가져옴
-    // const docIdsToDelete = checkedList.map((item) => item.docId);
-
-    // docIdsToDelete 배열에 있는 모든 문서를 삭제
-    // await docIdsToDelete.map(async (docId) => {
-    // await deleteDoc(doc(db, `users/${auth?.currentUser?.uid}/bookmark`, data?.id));
-
-    // const replyDocRef = doc(db, `users/${auth?.currentUser?.uid}/bookmark`, data?.id);
-    // await deleteDoc(replyDocRef);
-
-    // });
-  }, [data]);
-
-  // const onClickBookmarkToggle = async () => {
-  //   try {
-  //     // 문서 삭제
-  //     await deleteDoc(doc(db, `users/${auth?.currentUser?.uid}/bookmark`, data?.id));
-  //     console.log('Document successfully deleted!');
-  //   } catch (error) {
-  //     console.error('Error removing document: ', error);
-  //   }
-  // };
+  }, [auth.currentUser, data, isBookmarked]);
 
   // 장바구니 담기
   const onClickAddToCart = useCallback(async () => {
@@ -129,12 +125,13 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
     }
 
     const { id, brand, name, price, mainImg } = data;
-    if (!auth.currentUser) {
+    const uid = auth?.currentUser?.uid;
+
+    if (!uid) {
       alert('로그인이 필요합니다.');
       router.push('/login');
     }
 
-    const uid = auth?.currentUser?.uid;
     // cart 컬렉션 참조
     const cartCollection = `cart/${uid}/items`;
 

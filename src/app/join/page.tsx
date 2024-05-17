@@ -3,12 +3,11 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { auth, db } from '@lib/firebase';
 import { toast } from 'react-toastify';
 
 import DaumPostcode from 'react-daum-postcode';
-import { Address } from 'react-daum-postcode';
 
 import * as J from './join.style';
 import theme from '@styles/theme';
@@ -17,6 +16,8 @@ import StyledPhoneNumber from '@components/styled/StyledPhoneNumber';
 import StyledInput from '@components/styled/StyledInput';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
 import StyledButton from '@components/styled/StyledButton';
+import { useCouponIssuer } from '@hooks/useCouponIssuer';
+import { IoMdClose } from 'react-icons/io';
 
 type TermsList = {
   term1: boolean;
@@ -26,11 +27,12 @@ type TermsList = {
 
 export default function Join() {
   const router = useRouter();
-  const [allTermsChecked, setAllTermsChecked] = useState<boolean>(false);
-  const [modalState, setModalState] = useState<boolean>(false);
-  const [zipCode, setZipcode] = useState<string>('');
-  const [roadAddress, setRoadAddress] = useState<string>('');
-  const [iseAccountEmailCheck, setIseAccountEmailCheck] = useState<boolean>(false);
+  const [allTermsChecked, setAllTermsChecked] = useState<boolean>(false); // 동의함 체크 리스트 상태
+  const [modalState, setModalState] = useState<boolean>(false); // 주소 검색 모달 상태
+  const [zipCode, setZipcode] = useState<string>(''); // 우편번호
+  const [roadAddress, setRoadAddress] = useState<string>(''); // 도로명 주소
+  const [isAccountEmailCheck, setIsAccountEmailCheck] = useState<boolean>(false); // 이메일 중복 확인 상태
+  const { issueCoupon } = useCouponIssuer(); // 쿠폰 발행 커스텀 훅
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
@@ -89,13 +91,10 @@ export default function Join() {
     }
   }, [termsList]);
 
-  const handleModalOpen = useCallback(() => {
-    setModalState(true);
-  }, []);
-
-  const handleModalClose = useCallback(() => {
-    setModalState(false);
-  }, []);
+  // 주소검색 모달
+  const handleModalToggle = useCallback(() => {
+    setModalState(!modalState);
+  }, [modalState]);
 
   // 주소 검색 기능
   const completeHandler = (data: any) => {
@@ -110,26 +109,84 @@ export default function Join() {
   };
 
   // 중복 검사
-  const handleAccountEmailCheck = async () => {
-    // const itemsCollectionRef = collection(db, 'users');
-    const q = query(collection(db, 'users'), where('email', '==', inputs.email));
+  // const handleAccountEmailCheck = useCallback(
+  //   async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  //     e.preventDefault();
+  //     alert('wkrejd');
+  //     const q = query(collection(db, 'users'), where('email', '==', inputs.email));
+  //     const querySnapshot = await getDocs(q);
+
+  //     let exists = false;
+  //     for (const doc of querySnapshot.docs) {
+  //       exists = true;
+  //       alert('이미 가입된 이메일입니다.');
+  //       setIsAccountEmailCheck(false);
+  //       break;
+  //     }
+
+  //     if (!exists) {
+  //       alert('사용가능한 이메일입니다.');
+  //       setIsAccountEmailCheck(true);
+  //     }
+  //   },
+  //   [inputs.email]
+  // );
+
+  // const handleAccountEmailCheck1 = useCallback(
+  //   async (e: ChangeEvent<HTMLInputElement>) => {
+  //     e.preventDefault();
+  //     alert('wkrejd');
+  //     // const itemsCollectionRef = collection(db, 'users');
+  //     const q = query(collection(db, 'users'), where('email', '==', inputs.email));
+  //     const querySnapshot = await getDocs(q);
+
+  //     let exists = false;
+  //     // 가입된 이메일 중 중복 이메일 여부 확인
+  //     for (const doc of querySnapshot.docs) {
+  //       exists = true;
+  //       alert('이미 가입된 이메일입니다.');
+  //       setIsAccountEmailCheck(false);
+  //       break; // 이미 가입된 이메일일 경우 break
+  //     }
+
+  //     if (!exists) {
+  //       alert('사용가능한 이메일입니다.');
+  //       setIsAccountEmailCheck(true);
+  //     }
+
+  //     // if (exists) {
+  //     //   alert('이미 가입된 이메일입니다.');
+  //     //   setisAccountEmailCheck(false);
+  //     // } else {
+  //     //   alert('사용가능한 이메일입니다.');
+  //     //   setisAccountEmailCheck(true);
+  //     // }
+  //   },
+  //   [inputs]
+  // );
+
+  const handleAccountEmailCheck = useCallback(async () => {
+    // const uid = auth?.currentUser?.uid;
+    const couponCollection = `users`;
+    alert('sdf');
+    const ref = collection(db, couponCollection);
+    const q = query(ref, where('email', '==', inputs.email));
     const querySnapshot = await getDocs(q);
 
     let exists = false;
     // 가입된 이메일 중 중복 이메일 여부 확인
     for (const doc of querySnapshot.docs) {
       exists = true;
+      alert('이미 가입된 이메일입니다.');
+      setIsAccountEmailCheck(false);
       break; // 이미 가입된 이메일일 경우 break
     }
 
-    if (exists) {
-      alert('이미 가입된 이메일입니다.');
-      setIseAccountEmailCheck(false);
-    } else {
+    if (!exists) {
       alert('사용가능한 이메일입니다.');
-      setIseAccountEmailCheck(true);
+      setIsAccountEmailCheck(true);
     }
-  };
+  }, [inputs.email]);
 
   // 회원가입 버튼 클릭 시 작동
   const handleSignin = useCallback(() => {
@@ -170,6 +227,17 @@ export default function Join() {
         });
         // toast.info(`${user.email} 님 회원가입 성공! 자동 로그인 되었습니다`);
         alert(`${name} 님 반갑습니다!`);
+
+        // 신규 가입 쿠폰 발행
+        const couponDetails = {
+          id: '0',
+          title: '신규 회원 10% 할인 쿠폰',
+          expiration: 'indefinite',
+          discount: 10,
+          amount: false,
+          percentage: true,
+        };
+        await issueCoupon(uid, couponDetails, '신규 가입 쿠폰이 발행되었습니다.');
         router.push('/');
       })
       .catch((error) => {
@@ -212,7 +280,7 @@ export default function Join() {
             border
           />
           <StyledButton
-            onClick={handleModalOpen}
+            onClick={handleModalToggle}
             title="주소 검색"
             fontSize={12}
             width={94}
@@ -228,11 +296,10 @@ export default function Join() {
         {modalState && (
           <J.Modal>
             <J.ModalTitle>우편번호 검색</J.ModalTitle>
-            <DaumPostcode
-              onComplete={completeHandler}
-              // style={{ height: 'calc(100vh - 40px)', overflow: 'hidden' }}
-            />
-            <J.ModalClose onClick={handleModalClose}>닫기{/* <TfiClose size={16} /> */}</J.ModalClose>
+            <DaumPostcode onComplete={completeHandler} />
+            <J.ModalClose onClick={handleModalToggle}>
+              <IoMdClose size={16} />
+            </J.ModalClose>
           </J.Modal>
         )}
       </J.Form>

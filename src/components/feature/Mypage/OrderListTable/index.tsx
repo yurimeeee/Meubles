@@ -12,7 +12,7 @@ import { Product } from '@type/types';
 type OrderListTableProps = {
   // headers: HeaderType[];
   headers: any[];
-  data: Product[];
+  data?: any;
 };
 
 const OrderListTable = ({ headers = [], data }: OrderListTableProps) => {

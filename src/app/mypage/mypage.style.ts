@@ -40,6 +40,7 @@ export const CategoryList = styled.ul`
   display: flex;
   gap: 20px;
   margin-top: 50px;
+  margin-bottom: 40px;
 
   ${theme.devices.mobile} {
     margin-bottom: 4px;

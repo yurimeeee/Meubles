@@ -28,7 +28,7 @@ interface StyledButtonProps {
   icon?: ReactNode;
   disabled?: boolean;
   type?: 'button' | 'reset' | 'submit';
-  onClick?: () => void;
+  onClick: () => void;
 }
 
 interface IButton {

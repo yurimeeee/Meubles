@@ -29,7 +29,6 @@ const StyledPhoneNumber = ({ width = 440, height = 50, title, margin, value, onC
     }
   }, [value]);
 
-  console.log(setNumber1, setNumber2, setNumber3);
   const onChangeNumber = useCallback(
     (name: string) => (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
