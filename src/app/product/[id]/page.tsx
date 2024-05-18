@@ -130,6 +130,7 @@ const ProductDetailPage = ({ params }: { params: { id: string } }) => {
     if (!uid) {
       alert('로그인이 필요합니다.');
       router.push('/login');
+      return;
     }
 
     // cart 컬렉션 참조

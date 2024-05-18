@@ -85,13 +85,35 @@ export default function Login() {
 
   // 구글 로그인 버튼 클릭 시 구글 소셜 로그인
   const handleGoogleLogin = async () => {
-    try {
-      // const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      router.back();
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   // const provider = new GoogleAuthProvider();
+    //   await signInWithPopup(auth, provider);
+    //   router.back();
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // dispatch(yesLogin());
+        alert('로그인 성공');
+        window.location.replace('/');
+      })
+      .catch((error) => {
+        // dispatch(noLogin());
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+        console.log(errorCode);
+        console.log(errorMessage);
+        console.log(credential);
+        alert('로그인 실패');
+      });
   };
 
   // 비밀번호 변경 이메일 발송

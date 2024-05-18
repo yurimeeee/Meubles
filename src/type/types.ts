@@ -16,7 +16,7 @@ export type CheckedList = {
   docId: string         // DB 문서 Id
 };
 
-// 상품 
+// 상품 정보
 export type Product = {
   u_category: string;   // 대분류
   l_category: string;   // 소분류
@@ -48,3 +48,21 @@ export type UserInfo = {
   addressDetail?: string;// 상세주소
   phone: string;        // 연락처
 };
+
+// 쿠폰 정보
+export type Coupon = {
+  id: string;          // 쿠폰 Id
+  title: string;       // 쿠폰명
+  timestamp: {         // 발행 시각
+    seconds: number;
+    nanoseconds: number;
+  };
+  discount: number;    // 할인 금액/할인률
+  expiration: string;  // 쿠폰 만료일
+  percentage: boolean; // 정률제
+  amount: boolean;     // 정액제
+  minPrice?: number;    // 최소 결제 금액
+  status?: boolean;     // 쿠폰 상태
+
+}
+

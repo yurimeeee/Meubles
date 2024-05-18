@@ -236,6 +236,7 @@ export default function Join() {
           discount: 10,
           amount: false,
           percentage: true,
+          status: true,
         };
         await issueCoupon(uid, couponDetails, '신규 가입 쿠폰이 발행되었습니다.');
         router.push('/');

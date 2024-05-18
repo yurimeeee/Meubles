@@ -25,10 +25,6 @@ export const TableRow = styled.div<{ $disabled?: boolean; $height?: number }>`
   ${({ $disabled }) =>
     $disabled &&
     css`
-      &:hover {
-        background-color: ${theme.colors.whiteColor};
-      }
-
       & * {
         color: ${theme.colors.lightGrayFontColor};
       }
@@ -43,7 +39,7 @@ export const TableCell = styled.div<{
   $padding?: string;
 }>`
   min-width: ${({ $minWidth }) => $minWidth ? `${$minWidth}px` : 'auto'};
-  flex: ${({ $minWidth }) => ($minWidth ? 0 : 1)};
+  /* flex: ${({ $minWidth }) => ($minWidth ? 0 : 1)}; */
   width: ${({ $width }) => $width}%;
   height: 100%;
   font-family: 'AppleSDGothicNeoRegular';

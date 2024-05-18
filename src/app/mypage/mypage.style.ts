@@ -7,6 +7,8 @@ import Link from "next/link";
 
 
 export const Wrapper = styled.main`
+  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 60px 20px;
 
@@ -43,7 +45,7 @@ export const CategoryList = styled.ul`
   margin-bottom: 40px;
 
   ${theme.devices.mobile} {
-    margin-bottom: 4px;
+    margin-bottom: 16px;
     gap: 6px 20px;
     flex-wrap: wrap;
   }

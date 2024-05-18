@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import * as C from './cart.style';
 import theme from '@styles/theme';
 import { numberFormatter } from '@utils/formatter';
-import { CartItem, CheckedList } from '@type/types';
+import { CartItem, CheckedList, Product } from '@type/types';
 
 import { FlexBox, RegularFont, SemiBoldFont } from '@components/styled/StyledComponents';
 import StyledButton from '@components/styled/StyledButton';
@@ -42,16 +42,55 @@ export default function CartPage() {
   const [quantity, setQuantity] = useState<any>();
   const [cartItem, setCartItem] = useState<CartItem[] | null>(null);
   const [checkedList, setCheckedList] = useState<CheckedList[]>([]);
-  const [cartItems, setCartItems] = useRecoilState(cartItemsState);
+  const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
+  // const [cartItems, setCartItems] = useRecoilState(cartItemsState);
 
   useEffect(() => {
-    setQuantity(
-      cartItems.map((item) => ({
-        id: item?.id,
-        quantity: item?.quantity,
-      }))
-    );
+    let unsubscribe: Unsubscribe | null = null;
+    const fetchCartList = async () => {
+      //쿼리생성
+      const cartDataQuery = query(
+        collection(db, `cart/${auth?.currentUser?.uid}/items`) //컬렉션 지정
+      );
+      unsubscribe = await onSnapshot(cartDataQuery, (snapshot) => {
+        const cartList = snapshot.docs.map((doc) => {
+          const { id, brand, name, price, quantity, img } = doc.data();
+          return {
+            id,
+            brand,
+            name,
+            price,
+            quantity,
+            img,
+            docId: doc.id,
+          };
+        });
+        setCartItems(cartList as any);
+
+        setQuantity(
+          cartList.map((item) => ({
+            id: item?.id,
+            quantity: item?.quantity,
+          }))
+        );
+      });
+    };
+
+    fetchCartList();
+    return () => {
+      unsubscribe && unsubscribe();
+      // 사용자가 타임라인을 보고 있을때만 작동
+    };
   }, []);
+
+  // useEffect(() => {
+  //   setQuantity(
+  //     cartItems.map((item) => ({
+  //       id: item?.id,
+  //       quantity: item?.quantity,
+  //     }))
+  //   );
+  // }, []);
 
   // 페이지 로드 시 장바구니 데이터로 checkedList 상태에 설정
   useEffect(() => {
@@ -65,15 +104,21 @@ export default function CartPage() {
     }
   }, [cartItems]);
 
+  // // checkedList 모두 체크되는 경우, AllItemsChecked => true로 업데이트
+  // useEffect(() => {
+  //   const allChecked = checkedList?.every((item) => item.checked);
+  //   if (allChecked) {
+  //     setAllItemsChecked(true);
+  //   } else {
+  //     setAllItemsChecked(false);
+  //   }
+  // }, [checkedList]);
+
   // checkedList 모두 체크되는 경우, AllItemsChecked => true로 업데이트
-  useEffect(() => {
-    const allChecked = checkedList?.every((item) => item.checked);
-    if (allChecked) {
-      setAllItemsChecked(true);
-    } else {
-      setAllItemsChecked(false);
-    }
-  }, [checkedList]);
+  // useEffect(() => {
+  //   const allChecked = checkedList?.every((item) => item.checked);
+  //   setAllItemsChecked(allChecked);
+  // }, [checkedList]);
 
   // 각 체크박스 항목 클릭 시 checkedList 상태 업데이트
   const handleCheckboxChange = useCallback(
@@ -89,16 +134,38 @@ export default function CartPage() {
     },
     [setCheckedList]
   );
-
-  const checkAllItems = () => {
+  const handleCheckAllChange = () => {
+    const newCheckedState = !allItemsChecked;
+    setAllItemsChecked(newCheckedState);
     setCheckedList((prev) =>
       prev.map((item) => ({
         ...item,
-        checked: true,
+        checked: newCheckedState,
       }))
     );
-    setAllItemsChecked(!allItemsChecked);
   };
+  // const handleCheckAllChange = () => {
+  //   setCheckedList((prev) =>
+  //     prev.map((item) => ({
+  //       ...item,
+  //       checked: true,
+  //     }))
+  //   );
+  //   setAllItemsChecked(true);
+  // };
+
+  console.log('checkedList', checkedList);
+  // const handleCheckAllChange = () => {
+  //   setCheckedList((prev) =>
+  //     prev.map((item) => ({
+  //       ...item,
+  //       checked: true,
+  //     }))
+  //   );
+
+  //   console.log('checkedList', checkedList);
+  //   setAllItemsChecked(!allItemsChecked);
+  // };
 
   // const onChangeQuantity = useCallback(async (itemId: string, newQuantity: number) => {
   //   const docRef = doc(db, `cart/${auth?.currentUser?.uid}/items`, itemId);
@@ -159,67 +226,10 @@ export default function CartPage() {
       <FlexBox $margin="0 0 20px">
         <RegularFont $fontSize={16}>CART ({cartItems?.length})</RegularFont>
       </FlexBox>
-      {/* <C.PCCart>
-        <TableHeader headers={Header} checkAllItems={checkAllItems} allItemsChecked={allItemsChecked} />
-        <TableBody>
-          {cartItem === null ? (
-            <Loader />
-          ) : cartItem.length > 0 && quantity ? (
-            cartItem?.map((item, index) => (
-              <CartListTable
-                key={index}
-                headers={Header}
-                item={item}
-                // quantity={quantity[index]}
-                quantity={item.quantity}
-                setQuantity={setQuantity}
-                // onChangeQuantity={onChangeQuantity}
-                selectId={item.id}
-                isGroup={true}
-                // handleChecked={handleChecked(item.id)}
-                checkedList={checkedList}
-                handleCheckboxChange={handleCheckboxChange}
-              />
-            ))
-          ) : (
-            <C.NoResults>장바구니가 비어 있습니다</C.NoResults>
-          )}
-        </TableBody>
-        <TableFooter>
-          <FlexBox $justifyContent="end">
-            <RegularFont>
-              상품 구매금액 <SemiBoldFont>{numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0))}</SemiBoldFont> + 배송비{' '}
-              <SemiBoldFont>50,000</SemiBoldFont> = 합계 :{' '}
-              <SemiBoldFont>KRW {numberFormatter(cartItem?.reduce((total, item) => total + item.price * item.quantity, 0 || 0) + 50000)}</SemiBoldFont>
-            </RegularFont>
-          </FlexBox>
-        </TableFooter>
-        <FlexBox $gap="12px" $margin="16px 0 0">
-          <StyledButton
-            title="전체 삭제"
-            fontSize={12}
-            width={88}
-            height={30}
-            bgColor={theme.colors.lightGrayBgColor}
-            fontColor={theme.colors.blackColor}
-            border={`1px solid ${theme.colors.blackColor}`}
-            onClick={handleAllItemsDelete}
-          />
-          <StyledButton
-            title="선택 삭제"
-            fontSize={12}
-            width={88}
-            height={30}
-            bgColor={theme.colors.lightGrayBgColor}
-            fontColor={theme.colors.blackColor}
-            border={`1px solid ${theme.colors.blackColor}`}
-            onClick={handleItemsDelete}
-          />
-        </FlexBox>
-      </C.PCCart> */}
+
       <C.MobileCart>
         <C.CartListHeader>
-          <StyledCheckbox checked={allItemsChecked} onChange={checkAllItems} />
+          <StyledCheckbox checked={allItemsChecked} onChange={handleCheckAllChange} />
           <FlexBox $gap="8px" $justifyContent="end">
             <StyledButton
               title="전체 삭제"
@@ -273,15 +283,15 @@ export default function CartPage() {
           <C.TotalPrice>
             <C.RowTitle>합계</C.RowTitle>
 
-            <C.RowText>{cartItems && `${numberFormatter((cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000)}`}</C.RowText>
+            <C.RowText>KRW {cartItems && `${numberFormatter((cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000)}`}</C.RowText>
           </C.TotalPrice>
           <C.RowFlex>
             <C.RowTitle>상품 구매금액</C.RowTitle>
-            <C.RowText>{numberFormatter(cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0))}</C.RowText>
+            <C.RowText>KRW {numberFormatter(cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0))}</C.RowText>
           </C.RowFlex>
           <C.RowFlex>
             <C.RowTitle>배송비</C.RowTitle>
-            <C.RowText>50,000</C.RowText>
+            <C.RowText>KRW 50,000</C.RowText>
           </C.RowFlex>
         </C.AmountPayment>
       </C.MobileCart>
