@@ -30,6 +30,7 @@ export default ProductItem;
 
 const Wrapper = styled(Link)`
   width: 100%;
+  height: 100%;
   margin: 0 auto;
   position: relative;
   background: ${theme.colors.whiteColor};

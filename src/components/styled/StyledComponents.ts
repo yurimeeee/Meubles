@@ -90,6 +90,7 @@ export const NoResults = styled(RegularFont)`
   height: 100px;
   width: 100%;
   display: flex;
+  justify-content: center;
   align-items: center;
   padding: 0 20px;
 `;

@@ -1,74 +1,117 @@
+'use client';
+
+import React, { useCallback, useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import theme from '@styles/theme';
+
+import { auth, db } from '@lib/firebase';
+import { productData } from '@utils/productData';
+import { Product } from '@type/types';
 import { Loader } from '@components/share/BlankLoader';
-import TableHeader, { HeaderType } from '@components/share/Table/TableHeader';
-import { TableRow, TableCell, TableText, TableImg, ItemInfo, ProductName } from '@components/share/Table/table.style';
-
-import React from 'react';
-import { numberFormatter } from '@utils/formatter';
-import { TableBody } from '../../../share/Table/table.style';
-import { useRouter } from 'next/navigation';
 import { NoResults } from '@components/styled/StyledComponents';
+import ProductItem from '@components/share/ProductItem';
 
-type WishListTableProps = {
-  // headers: HeaderType[];
-  headers: any[];
-  data?: any;
-};
+import { PiHeartStraightFill } from 'react-icons/pi';
 
-const WishListTable = ({ headers = [], data }: WishListTableProps) => {
-  const router = useRouter();
+const WishListTable = () => {
+  const [bookmarkList, setBookmarkList] = useState<any[]>();
+  const [bookmarkItems, setBookmarkItems] = useState<Product[] | null>(null);
+
+  // 북마크 리스트 fetch
+  const fetchBookmarkData = useCallback(async () => {
+    const uid = auth?.currentUser?.uid;
+    const querySnapshot = await getDocs(collection(db, `users/${uid}/bookmark`));
+    const data = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setBookmarkList(data);
+  }, [auth?.currentUser?.uid]);
+
+  useEffect(() => {
+    fetchBookmarkData();
+  }, [fetchBookmarkData]);
+
+  // 북마크 리스트에 맞는 상품 필터링
+  useEffect(() => {
+    if (bookmarkList && productData) {
+      const tmp = productData.filter((item) => bookmarkList.some((e) => e.id === item.id));
+      setBookmarkItems(tmp);
+    }
+  }, [bookmarkList]);
+
+  //북마크 삭제
+  const onClickBookmarkDelete = useCallback(
+    async (id: number) => {
+      const uid = auth?.currentUser?.uid;
+      const bookmarkRef = doc(db, `users/${uid}/bookmark/${id}`);
+
+      try {
+        await deleteDoc(bookmarkRef);
+        await fetchBookmarkData();
+      } catch (error) {
+        console.error('Error toggling bookmark:', error);
+      }
+    },
+    [auth.currentUser, fetchBookmarkData]
+  );
+
   return (
-    <>
-      {/* <TableHeader headers={Header} /> */}
-      <TableRow>
-        {headers.map((header: HeaderType, index: number) => {
-          return (
-            <TableCell key={`${index}-table-header`} $minWidth={header?.minWidth} $width={header.width}>
-              {header.label}
-            </TableCell>
-          );
-        })}
-      </TableRow>
-      <TableBody>
-        {data === null ? (
+    <Wrapper>
+      <WIshListWrap>
+        {bookmarkItems === null ? (
           <Loader />
-        ) : data?.length > 0 ? (
-          data?.map((item, index) => (
-            <TableRow $height={120} $disabled={item?.lrs_status === 'complete' || item?.lrs_status === 'reject' || item?.lrs_status === 'cancel'}>
-              <TableCell $minWidth={headers[0].minWidth} $width={headers[0].width}>
-                <TableText></TableText>
-              </TableCell>
-              <TableCell
-                $minWidth={headers[1].minWidth}
-                $width={headers[1].width}
-                // onClick={() => {
-                //   router.push(`/product/${item.id}`);
-                // }}
-                $padding="10px 0"
-              >
-                <TableImg src={item.img} alt={item.name} />
-                <ItemInfo>
-                  {/* <Brand>{item.brand}</Brand>
-                  <ProductName>{item.name}</ProductName> */}
-                </ItemInfo>
-                {/* <TableText>{item?.name}</TableText> */}
-              </TableCell>
-              <TableCell $minWidth={headers[2].minWidth} $width={headers[3].width} $padding="16px 0">
-                <TableText></TableText>
-              </TableCell>
-              <TableCell $minWidth={headers[3].minWidth} $width={headers[3].width} $padding="16px 0">
-                <TableText>{numberFormatter(item.price * item.quantity)}</TableText>
-              </TableCell>
-              <TableCell $minWidth={headers[4].minWidth} $width={headers[4].width} $padding="16px 0">
-                <TableText>{'-'}</TableText>
-              </TableCell>
-            </TableRow>
-          ))
+        ) : bookmarkItems && bookmarkItems.length > 0 ? (
+          <WishList>
+            {bookmarkItems.map((item, idx) => (
+              <WishCard key={idx}>
+                <Bookmark
+                  size={20}
+                  onClick={() => {
+                    onClickBookmarkDelete(item.id);
+                  }}
+                />
+                <ProductItem data={item} />
+              </WishCard>
+            ))}
+          </WishList>
         ) : (
-          <NoResults>주문 내역이 없습니다</NoResults>
+          <NoResults>조회된 상품이 없습니다</NoResults>
         )}
-      </TableBody>
-    </>
+      </WIshListWrap>
+    </Wrapper>
   );
 };
 
 export default WishListTable;
+
+const Wrapper = styled.div`
+  width: 100%;
+  max-width: 1280px;
+`;
+const WIshListWrap = styled.div``;
+const WishList = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  ${theme.devices.mobile} {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+`;
+const WishCard = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: ${theme.colors.whiteColor};
+`;
+const Bookmark = styled(PiHeartStraightFill)`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 1;
+  cursor: pointer;
+`;

@@ -7,7 +7,7 @@ import { collection, deleteDoc, doc, onSnapshot, query, updateDoc } from 'fireba
 import { auth, db } from '@lib/firebase';
 import { toast } from 'react-toastify';
 
-import * as C from './cart.style';
+import * as C from '../cart.style';
 import theme from '@styles/theme';
 import { numberFormatter } from '@utils/formatter';
 import { CartItem, CheckedList, Product } from '@type/types';
@@ -18,10 +18,11 @@ import TableHeader from '@components/share/Table/TableHeader';
 import CartListTable from '@components/feature/Cart/CartListTable';
 import { TableBody, TableFooter } from '@components/share/Table/table.style';
 import Loader from '@components/share/Loader';
-import CartListItem from '@components/feature/Cart/CartListItem';
+import MobileCartList from '@components/feature/Cart/MobileCartList';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
 import { useRecoilState } from 'recoil';
 import { cartItemsState } from '@recoil/atoms';
+import CartListItem from '@components/feature/Cart/CartListItem';
 
 const Header = [
   // { label: '', minWidth: 45, width: 3 },
@@ -36,51 +37,53 @@ const Header = [
   { label: 'DISCOUNT', width: 10 },
 ];
 
-export default function CartPage() {
+export default function payment() {
   const router = useRouter();
   const [allItemsChecked, setAllItemsChecked] = useState<boolean>(false);
   const [quantity, setQuantity] = useState<any>();
   const [cartItem, setCartItem] = useState<CartItem[] | null>(null);
   const [checkedList, setCheckedList] = useState<CheckedList[]>([]);
-  const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
+  // const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
+  const [cartItems, setCartItems] = useRecoilState(cartItemsState);
+  console.log('cartItems:::', cartItems);
+  console.log('checkedList', checkedList);
+  // useEffect(() => {
+  //   let unsubscribe: Unsubscribe | null = null;
+  //   const fetchCartList = async () => {
+  //     //쿼리생성
+  //     const cartDataQuery = query(
+  //       collection(db, `cart/${auth?.currentUser?.uid}/items`) //컬렉션 지정
+  //     );
+  //     unsubscribe = await onSnapshot(cartDataQuery, (snapshot) => {
+  //       const cartList = snapshot.docs.map((doc) => {
+  //         const { id, brand, name, price, quantity, img } = doc.data();
+  //         return {
+  //           id,
+  //           brand,
+  //           name,
+  //           price,
+  //           quantity,
+  //           img,
+  //           docId: doc.id,
+  //         };
+  //       });
+  //       setCartItems(cartList as any);
 
-  useEffect(() => {
-    let unsubscribe: Unsubscribe | null = null;
-    const fetchCartList = async () => {
-      //쿼리생성
-      const cartDataQuery = query(
-        collection(db, `cart/${auth?.currentUser?.uid}/items`) //컬렉션 지정
-      );
-      unsubscribe = await onSnapshot(cartDataQuery, (snapshot) => {
-        const cartList = snapshot.docs.map((doc) => {
-          const { id, brand, name, price, quantity, img } = doc.data();
-          return {
-            id,
-            brand,
-            name,
-            price,
-            quantity,
-            img,
-            docId: doc.id,
-          };
-        });
-        setCartItems(cartList as any);
+  //       setQuantity(
+  //         cartList.map((item) => ({
+  //           id: item?.id,
+  //           quantity: item?.quantity,
+  //         }))
+  //       );
+  //     });
+  //   };
 
-        setQuantity(
-          cartList.map((item) => ({
-            id: item?.id,
-            quantity: item?.quantity,
-          }))
-        );
-      });
-    };
-
-    fetchCartList();
-    return () => {
-      unsubscribe && unsubscribe();
-      // 사용자가 타임라인을 보고 있을때만 작동
-    };
-  }, []);
+  //   fetchCartList();
+  //   return () => {
+  //     unsubscribe && unsubscribe();
+  //     // 사용자가 타임라인을 보고 있을때만 작동
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   setQuantity(
@@ -222,105 +225,23 @@ export default function CartPage() {
 
   return (
     <C.Wrapper>
-      <FlexBox $margin="0 0 20px">
-        <RegularFont $fontSize={16}>CART ({cartItems?.length})</RegularFont>
-      </FlexBox>
-
-      <C.MobileCart>
-        <C.CartListHeader>
-          <StyledCheckbox checked={allItemsChecked} onChange={handleCheckAllChange} />
-          <FlexBox $gap="8px" $justifyContent="end">
-            <StyledButton
-              title="전체 삭제"
-              fontSize={12}
-              width={74}
-              height={28}
-              padding="0 12px"
-              bgColor={theme.colors.lightGrayBgColor}
-              fontColor={theme.colors.blackColor}
-              border={`1px solid ${theme.colors.blackColor}`}
-              onClick={handleAllItemsDelete}
-            />
-            <StyledButton
-              title="선택 삭제"
-              fontSize={12}
-              width={74}
-              height={28}
-              padding="0 10px"
-              bgColor={theme.colors.lightGrayBgColor}
-              fontColor={theme.colors.blackColor}
-              border={`1px solid ${theme.colors.blackColor}`}
-              onClick={handleItemsDelete}
-            />
-          </FlexBox>
-        </C.CartListHeader>
-        <C.CartList>
-          {cartItems === null ? (
-            <Loader />
-          ) : cartItems.length > 0 && quantity ? (
-            cartItems?.map((item, index) => (
-              <CartListItem
-                key={index}
-                item={item}
-                // quantity={quantity[index]}
-                quantity={item.quantity}
-                setQuantity={setQuantity}
-                // onChangeQuantity={onChangeQuantity}
-                selectId={item.id}
-                isGroup={true}
-                // handleChecked={handleChecked(item.id)}
-                checkedList={checkedList}
-                handleCheckboxChange={handleCheckboxChange}
-              />
-            ))
-          ) : (
-            <C.NoResults>장바구니가 비어 있습니다</C.NoResults>
-          )}
-        </C.CartList>
-
-        <C.AmountPayment>
-          <C.TotalPrice>
-            <C.RowTitle>합계</C.RowTitle>
-
-            <C.RowText>KRW {cartItems && `${numberFormatter((cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000)}`}</C.RowText>
-          </C.TotalPrice>
-          <C.RowFlex>
-            <C.RowTitle>상품 구매금액</C.RowTitle>
-            <C.RowText>KRW {numberFormatter(cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0))}</C.RowText>
-          </C.RowFlex>
-          <C.RowFlex>
-            <C.RowTitle>배송비</C.RowTitle>
-            <C.RowText>KRW 50,000</C.RowText>
-          </C.RowFlex>
-        </C.AmountPayment>
-      </C.MobileCart>
-      <FlexBox $gap="12px" $margin="16px auto 0" $justifyContent="center">
-        <StyledButton
-          title="전체 상품 주문"
-          fontSize={14}
-          width={110}
-          height={45}
-          padding="0 10px"
-          bgColor={theme.colors.blackColor}
-          fontColor={theme.colors.whiteColor}
-          border={`1px solid ${theme.colors.blackColor}`}
-          // onClick={handleAllItemsDelete}
-          onClick={() => {
-            router.push('/cart/payment');
-          }}
-        />
-        <StyledButton
-          title="선택 상품 주문"
-          fontSize={14}
-          width={110}
-          height={45}
-          padding="0 10px"
-          bgColor={theme.colors.lightGrayBgColor}
-          fontColor={theme.colors.blackColor}
-          border={`1px solid ${theme.colors.blackColor}`}
-          onClick={handleItemsDelete}
-        />
-      </FlexBox>
+      결제 페이지
+      {cartItems.length > 0 &&
+        cartItems?.map((item, index) => (
+          <CartListItem
+            key={index}
+            item={item}
+            // quantity={quantity[index]}
+            quantity={item.quantity}
+            setQuantity={setQuantity}
+            // onChangeQuantity={onChangeQuantity}
+            selectId={item.id}
+            isGroup={true}
+            // handleChecked={handleChecked(item.id)}
+            checkedList={checkedList}
+            handleCheckboxChange={handleCheckboxChange}
+          />
+        ))}
     </C.Wrapper>
   );
 }

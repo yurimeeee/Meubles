@@ -8,7 +8,7 @@ import QuantitySelect from '@components/share/QuantitySelect';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
 import { MediumFont, RegularFont, SemiBoldFont, FlexBox } from '@components/styled/StyledComponents';
 
-type MobileCartListProps = {
+type CartListItemProps = {
   item?: any;
   quantity?: number;
   setQuantity?: Dispatch<SetStateAction<number>>;
@@ -19,7 +19,7 @@ type MobileCartListProps = {
   checkedList?: { id: number; checked: boolean }[];
 };
 
-const MobileCartList = ({ item, quantity, setQuantity, isGroup, onChangeQuantity, selectId, handleCheckboxChange, checkedList }: MobileCartListProps) => {
+const CartListItem = ({ item, quantity, setQuantity, isGroup, onChangeQuantity, selectId, handleCheckboxChange, checkedList }: CartListItemProps) => {
   const router = useRouter();
 
   return (
@@ -60,7 +60,7 @@ const MobileCartList = ({ item, quantity, setQuantity, isGroup, onChangeQuantity
   );
 };
 
-export default MobileCartList;
+export default CartListItem;
 
 const Wrapper = styled.div`
   width: 100%;

@@ -12,7 +12,7 @@ export const TableRow = styled.div<{ $disabled?: boolean; $height?: number }>`
   /* height: 50px; */
   height: ${({ $height }) => $height ? `${$height}px` : '50px'};
   max-width: 1280px;
-  min-width: 1080px;
+  /* min-width: 1080px; */
   display: flex;
   align-items: center;
   border-bottom: 1px solid ${theme.colors.grayFontColor};

@@ -32,8 +32,8 @@ const WishListHeader = [
 ];
 
 export default function Mypage() {
-  const [bookmarkList, setBookmarkList] = useState<any[]>();
-  const [bookmarkItems, setBookmarkItems] = useState<Product[]>();
+  // const [bookmarkList, setBookmarkList] = useState<any[]>();
+  // const [bookmarkItems, setBookmarkItems] = useState<Product[]>();
   const [active, setActive] = useState<string>('MY ORDERS');
   const [myInfo, setMyInfo] = useState<UserInfo | DocumentData>();
 
@@ -54,29 +54,29 @@ export default function Mypage() {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const uid = auth?.currentUser?.uid;
-      const querySnapshot = await getDocs(collection(db, `users/${uid}/bookmark`));
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setBookmarkList(data);
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const uid = auth?.currentUser?.uid;
+  //     const querySnapshot = await getDocs(collection(db, `users/${uid}/bookmark`));
+  //     const data = querySnapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
+  //     setBookmarkList(data);
+  //   };
 
-    fetchData();
-  }, [auth?.currentUser?.uid]);
-  console.log('bookmarkList', bookmarkList);
+  //   fetchData();
+  // }, [auth?.currentUser?.uid]);
+  // console.log('bookmarkList', bookmarkList);
 
-  useEffect(() => {
-    if (bookmarkList && productData) {
-      const tmp = productData.filter((item) => bookmarkList.some((e) => e.id === item.id));
-      setBookmarkItems(tmp);
-    }
-  }, [bookmarkList]);
+  // useEffect(() => {
+  //   if (bookmarkList && productData) {
+  //     const tmp = productData.filter((item) => bookmarkList.some((e) => e.id === item.id));
+  //     setBookmarkItems(tmp);
+  //   }
+  // }, [bookmarkList]);
 
-  console.log('bookmarkItems', bookmarkItems);
+  // console.log('bookmarkItems', bookmarkItems);
 
   return (
     <M.Wrapper>
@@ -109,9 +109,9 @@ export default function Mypage() {
           <M.ActiveBar $Active={active === 'WISHLIST'} />
         </M.CategoryItem>
       </M.CategoryList>
-      {active === 'MY ORDERS' && <OrderListTable headers={OrderListHeader} data={bookmarkItems} />}
+      {active === 'MY ORDERS' && <OrderListTable headers={OrderListHeader} />}
       {active === 'COUPON' && <CouponList />}
-      {active === 'WISHLIST' && <WishListTable headers={WishListHeader} data={bookmarkItems} />}
+      {active === 'WISHLIST' && <WishListTable />}
     </M.Wrapper>
   );
 }
