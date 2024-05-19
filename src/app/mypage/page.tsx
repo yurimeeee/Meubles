@@ -70,7 +70,8 @@ export default function Mypage() {
   // }, [bookmarkList]);
 
   // console.log('bookmarkItems', bookmarkItems);
-
+  console.log('myInfo::', myInfo);
+  console.log('auth?.currentUser?.uid::', auth?.currentUser?.uid);
   return (
     <M.Wrapper>
       <M.AccountWrap>

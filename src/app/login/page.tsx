@@ -3,7 +3,7 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '@lib/firebase';
+import { auth, db } from '@lib/firebase';
 import * as L from './login.style';
 
 import theme from '@styles/theme';
@@ -13,12 +13,15 @@ import StyledCheckbox from '@components/styled/StyledCheckbox';
 import StyledButton from '@components/styled/StyledButton';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useCouponIssuer } from '@hooks/useCouponIssuer';
 
 export default function Login() {
   const router = useRouter();
   const provider = new GoogleAuthProvider();
   const [isSaveId, setIsSaveId] = useState<boolean>(false);
   const [cookies, setCookie, removeCookie] = useCookies(['userId']);
+  const { issueCoupon } = useCouponIssuer(); // 쿠폰 발행 커스텀 훅
   const [inputs, setInputs] = useState({
     email: '',
     password: '',
@@ -94,25 +97,41 @@ export default function Login() {
     // }
 
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(async (result) => {
         // dispatch(yesLogin());
-        alert('로그인 성공');
-        window.location.replace('/');
+        alert(`로그인 되었습니다`);
+
+        const uid = auth?.currentUser?.uid;
+        if (!uid) {
+          router.push('/');
+          return;
+        }
+        // 동일 쿠폰 발행 여부 확인
+        const couponCollection = `users/${uid}/coupon`;
+        const ref = collection(db, couponCollection);
+        const q = query(ref, where('title', '==', '[SUMMER SPECIAL COUPON] 여름 맞이 특별 할인'));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.size > 0) {
+          return;
+        }
+
+        // 신규 가입 쿠폰 발행
+        const couponDetails = {
+          id: '0',
+          title: '신규 회원 10% 할인 쿠폰',
+          expiration: 'indefinite',
+          discount: 10,
+          amount: false,
+          percentage: true,
+          status: true,
+        };
+
+        await issueCoupon(uid, couponDetails, '신규 가입 쿠폰이 발행되었습니다.');
+        router.push('/');
       })
       .catch((error) => {
-        // dispatch(noLogin());
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-        console.log(errorCode);
-        console.log(errorMessage);
-        console.log(credential);
-        alert('로그인 실패');
+        alert('로그인에 실패했습니다. 다시 시도해주세요.');
       });
   };
 
