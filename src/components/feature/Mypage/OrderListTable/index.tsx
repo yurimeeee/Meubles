@@ -33,7 +33,7 @@ const OrderListTable = ({ headers = [], data }: OrderListTableProps) => {
         {data === null ? (
           <Loader />
         ) : data?.length > 0 ? (
-          data?.map((item, index) => (
+          data?.map((item: any, index: number) => (
             <TableRow $height={120}>
               <TableCell $minWidth={headers[0].minWidth} $width={headers[0].width}>
                 <TableText></TableText>

@@ -145,7 +145,7 @@ const CouponList = () => {
                 <TableText>{item.amount ? `${numberFormatter(item.discount)} 원` : `${item.discount} %`}</TableText>
               </TableCell>
               <TableCell $width={Header[3].width} $padding="16px 0">
-                <TableText>{item.expiration}</TableText>
+                <TableText>{item.expiration !== 'indefinite' ? item.expiration : '무기한'}</TableText>
               </TableCell>
               <TableCell $width={Header[4].width} $padding="16px 0">
                 <TableText>{item.minPrice ? `최소 결제 금액 ${numberFormatter(item.minPrice)} 원` : '-'}</TableText>

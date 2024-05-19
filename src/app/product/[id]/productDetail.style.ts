@@ -28,19 +28,27 @@ export const Wrapper = styled.div`
   }
 `;
 export const Info = styled.div`
-  padding-left: 92px;
+  margin-left: 92px;
+  max-width: 390px;
 
   ${theme.devices.tablet} {
-    padding-left: 32px;
+    margin-left: 20px;
+    /* max-width: 100%; */
+    /* background: pink; */
   }
   ${theme.devices.mobile} {
-    padding-left: 0;
+    margin-left: 0;
+    max-width: 100%;
   }
 `;
 export const ImgBox = styled.div`
   width: 100%;
   max-width: 460px;
   min-width: 310px;
+
+  /* ${theme.devices.notebook} {
+    max-width: 400px;
+  } */
 
   ${theme.devices.mobile} {
     max-width: 680px;

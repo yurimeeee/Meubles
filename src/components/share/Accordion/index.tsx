@@ -10,7 +10,9 @@ type AccordionContentsProps = {
 
 const AccordionContents = ({ data }: AccordionContentsProps) => {
   return (
-    <AccordionWrap defaultActiveKey="0">
+    <AccordionWrap
+    // defaultActiveKey="0"
+    >
       <Accordion.Item eventKey="0">
         <Accordion.Header>DESCRIPTION</Accordion.Header>
         <Accordion.Body>
@@ -92,7 +94,7 @@ export default AccordionContents;
 
 const AccordionWrap = styled(Accordion)`
   width: 100%;
-  max-width: 540px;
+  /* max-width: 540px; */
 
   .accordion-button {
     padding: 12px;

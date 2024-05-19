@@ -17,14 +17,15 @@ const firebaseConfig = {
   // storageBucket: "meubles-6ea05.appspot.com",
   // messagingSenderId: "1097000172299",
   // appId: "1:1097000172299:web:a0f3b561cc5f4d425bc00e",
-  // measurementId: "G-B8FEFV1Y02"
+  // measurementId: "G-B8FEFV1Y02"=
+
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  // measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

@@ -17,18 +17,11 @@ const OrderListHeader = [
   // { label: 'QYT', minWidth: 115, width: 10 },
   // { label: 'PRICE', minWidth: 115, width: 10 },
   // { label: 'DISCOUNT', minWidth: 115, width: 10 },
-  { label: 'ORDER DATE', width: 10 },
-  { label: 'ITEM', width: 55 },
+  { label: 'ORDER DATE', width: 20 },
+  { label: 'ITEM', width: 40 },
   { label: 'QYT', width: 10 },
   { label: 'PRICE', width: 15 },
-  { label: 'STATUS', width: 10 },
-];
-const WishListHeader = [
-  { label: 'ORDER DATE', width: 10 },
-  { label: 'ITEM', width: 55 },
-  { label: 'QYT', width: 10 },
-  { label: 'PRICE', width: 15 },
-  { label: 'STATUS', width: 10 },
+  { label: 'STATUS', width: 15 },
 ];
 
 export default function Mypage() {
@@ -85,10 +78,10 @@ export default function Mypage() {
           <M.MyAccount>MY ACCOUNT</M.MyAccount>
           <M.Welcome>반갑습니다. {myInfo?.name} 님!</M.Welcome>
         </FlexBox>
-        <FlexBox $gap="8px" $flexDirection="column" $alignItems="start" $flex={0}>
+        <M.Setting>
           <M.SettingLink href="/mypage/setting/profile">회원 정보 수정</M.SettingLink>
           <M.SettingLink href="/mypage/setting/password">비밀번호 재설정</M.SettingLink>
-        </FlexBox>
+        </M.Setting>
       </M.AccountWrap>
 
       <M.CategoryList>

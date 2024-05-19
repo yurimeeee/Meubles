@@ -80,7 +80,15 @@ export const TotalPrice = styled(RowFlex)`
 export const RowTitle = styled(RegularFont)`
   color: ${theme.colors.grayFontColor} !important;
   ${theme.typography.body}; 
+
+  ${theme.devices.mobile} {
+    ${theme.typography.sm}; 
+  }
 `;
 export const RowText = styled(SemiBoldFont)`
   ${theme.typography.body}; 
+  
+  ${theme.devices.mobile} {
+    ${theme.typography.sm}; 
+  }
 `;

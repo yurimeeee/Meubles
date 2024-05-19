@@ -20,6 +20,10 @@ export const Wrapper = styled.main`
     padding: 30px 20px;
   } 
 `;
+export const Setting = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 export const AccountWrap = styled.div`
   display: flex;
