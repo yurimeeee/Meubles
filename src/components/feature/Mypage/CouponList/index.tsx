@@ -7,8 +7,8 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import theme from '@styles/theme';
 import { auth, db } from '@lib/firebase';
 import { useCouponIssuer } from '@hooks/useCouponIssuer';
+import { useCouponFetch } from '@hooks/useCouponFetch';
 import { numberFormatter } from '@utils/formatter';
-import { Coupon } from '@type/types';
 import { FlexBox, MediumFont, NoResults, RegularFont, SemiBoldFont } from '@components/styled/StyledComponents';
 import { TableRow, TableCell, TableText } from '@components/share/Table/table.style';
 import { Loader } from '@components/share/BlankLoader';
@@ -25,22 +25,16 @@ const Header = [
 
 const CouponList = () => {
   const { issueCoupon } = useCouponIssuer(); // 쿠폰 발행 커스텀 훅
+  const { fetchData, couponData } = useCouponFetch(); // 쿠폰 발행 커스텀 훅
   const [couponCode, setCouponCode] = useState<string>(); // 쿠폰 코드 값
-  const [couponData, setCouponData] = useState<Coupon[] | null>(null); // 쿠폰 데이터
+  const uid = auth?.currentUser?.uid;
 
-  // 쿠폰 데이터 가져오가
+  // 쿠폰 데이터 가져오기
   useEffect(() => {
-    const fetchData = async () => {
-      const uid = auth?.currentUser?.uid;
-      const querySnapshot = await getDocs(collection(db, `users/${uid}/coupon`));
-      const dataList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setCouponData(dataList as any);
-    };
-    fetchData();
-  }, [auth?.currentUser?.uid, setCouponData]);
+    if (uid) {
+      fetchData(uid);
+    }
+  }, [uid, fetchData]);
 
   // 인풋에 값 입력 시
   const onChange = useCallback(
@@ -52,7 +46,7 @@ const CouponList = () => {
 
   // 쿠폰 코드 입력 후 버튼 클릭 시, 쿠폰 발행
   const handleCouponRegister = useCallback(async () => {
-    if (!auth?.currentUser) {
+    if (!uid) {
       return;
     }
     if (couponCode !== 'SummerCoupon') {
@@ -61,7 +55,7 @@ const CouponList = () => {
     }
 
     // 동일 쿠폰 발행 여부 확인
-    const couponCollection = `users/${auth.currentUser.uid}/coupon`;
+    const couponCollection = `users/${uid}/coupon`;
     const ref = collection(db, couponCollection);
     const q = query(ref, where('title', '==', '[SUMMER SPECIAL COUPON] 여름 맞이 특별 할인'));
     const querySnapshot = await getDocs(q);
@@ -87,7 +81,8 @@ const CouponList = () => {
       status: true,
     };
 
-    await issueCoupon(auth.currentUser.uid, couponDetails);
+    await issueCoupon(uid, couponDetails);
+    fetchData(uid); // 쿠폰 발행 후 데이터 리페치
   }, [couponCode]);
 
   return (
@@ -130,7 +125,7 @@ const CouponList = () => {
             <TableText>MIN</TableText>
           </TableCell>
         </TableRow>
-        {couponData === null ? (
+        {couponData === null || couponData === undefined ? (
           <Loader />
         ) : couponData && couponData.length > 0 ? (
           couponData.map((item, idx) => (

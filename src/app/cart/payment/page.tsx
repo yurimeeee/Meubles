@@ -3,14 +3,15 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Unsubscribe } from 'firebase/auth';
-import { collection, deleteDoc, doc, onSnapshot, query, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, DocumentData, getDoc, onSnapshot, query, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@lib/firebase';
 import { toast } from 'react-toastify';
 
 import * as C from '../cart.style';
+import * as J from '../../join/join.style';
 import theme from '@styles/theme';
 import { numberFormatter } from '@utils/formatter';
-import { CartItem, CheckedList, Product } from '@type/types';
+import { CartItem, CheckedList, Coupon, Product, UserInfo } from '@type/types';
 
 import { FlexBox, RegularFont, SemiBoldFont } from '@components/styled/StyledComponents';
 import StyledButton from '@components/styled/StyledButton';
@@ -21,8 +22,15 @@ import Loader from '@components/share/Loader';
 import MobileCartList from '@components/feature/Cart/MobileCartList';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
 import { useRecoilState } from 'recoil';
-import { cartItemsState } from '@recoil/atoms';
+import { cartItemsState, paymentItemsState } from '@recoil/atoms';
 import CartListItem from '@components/feature/Cart/CartListItem';
+import StyledSelect from '@components/styled/StyledSelect';
+import { useCouponFetch } from '@hooks/useCouponFetch';
+import { useOrderProcessor } from '@hooks/useOrderProcessor';
+import StyledInput from '@components/styled/StyledInput';
+import StyledPhoneNumber from '@components/styled/StyledPhoneNumber';
+import DaumPostcode from 'react-daum-postcode';
+import { IoMdClose } from 'react-icons/io';
 
 const Header = [
   // { label: '', minWidth: 45, width: 3 },
@@ -39,166 +47,158 @@ const Header = [
 
 export default function payment() {
   const router = useRouter();
-  const [allItemsChecked, setAllItemsChecked] = useState<boolean>(false);
-  const [quantity, setQuantity] = useState<any>();
-  const [cartItem, setCartItem] = useState<CartItem[] | null>(null);
-  const [checkedList, setCheckedList] = useState<CheckedList[]>([]);
-  // const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
-  const [cartItems, setCartItems] = useRecoilState(cartItemsState);
-  console.log('cartItems:::', cartItems);
-  console.log('checkedList', checkedList);
-  // useEffect(() => {
-  //   let unsubscribe: Unsubscribe | null = null;
-  //   const fetchCartList = async () => {
-  //     //쿼리생성
-  //     const cartDataQuery = query(
-  //       collection(db, `cart/${auth?.currentUser?.uid}/items`) //컬렉션 지정
-  //     );
-  //     unsubscribe = await onSnapshot(cartDataQuery, (snapshot) => {
-  //       const cartList = snapshot.docs.map((doc) => {
-  //         const { id, brand, name, price, quantity, img } = doc.data();
-  //         return {
-  //           id,
-  //           brand,
-  //           name,
-  //           price,
-  //           quantity,
-  //           img,
-  //           docId: doc.id,
-  //         };
-  //       });
-  //       setCartItems(cartList as any);
+  const { processOrder } = useOrderProcessor(); // 결제 커스텀 훅
+  const { fetchData, couponData } = useCouponFetch(); // 쿠폰 발행 커스텀 훅
+  const [myInfo, setMyInfo] = useState<UserInfo | DocumentData>();
 
-  //       setQuantity(
-  //         cartList.map((item) => ({
-  //           id: item?.id,
-  //           quantity: item?.quantity,
-  //         }))
-  //       );
-  //     });
-  //   };
+  const [cartItems, setCartItems] = useRecoilState(paymentItemsState);
+  // const [coupons, setCoupons] = useState<{ value: string; label: string }[]>([]);
+  // const [couponOption, setCouponOption] = useState(['선택']);
+  const [couponOption, setCouponOption] = useState([{ value: '선택', label: '선택' }]);
+  const [selectedCoupon, setSelectedCoupon] = useState('선택');
+  const [selectedCouponInfo, setSelectedCouponInfo] = useState<Coupon | null>();
+  const [discountPrice, setDiscountPrice] = useState<number>(0);
 
-  //   fetchCartList();
-  //   return () => {
-  //     unsubscribe && unsubscribe();
-  //     // 사용자가 타임라인을 보고 있을때만 작동
-  //   };
-  // }, []);
+  const [modalState, setModalState] = useState<boolean>(false);
+  const [zipCode, setZipcode] = useState<string>('');
+  const [roadAddress, setRoadAddress] = useState<string>('');
 
-  // useEffect(() => {
-  //   setQuantity(
-  //     cartItems.map((item) => ({
-  //       id: item?.id,
-  //       quantity: item?.quantity,
-  //     }))
-  //   );
-  // }, []);
+  const [inputs, setInputs] = useState({
+    email: myInfo?.email,
+    name: myInfo?.name,
+    address: myInfo?.address,
+    addressDetail: myInfo?.addressDetail,
+    phone: myInfo?.phone,
+  });
 
-  // 페이지 로드 시 장바구니 데이터로 checkedList 상태에 설정
   useEffect(() => {
-    if (cartItems) {
-      const tmp = cartItems.map((item) => ({
-        id: item?.id,
-        checked: false,
-        docId: item?.docId,
-      }));
-      setCheckedList(tmp as CheckedList[]);
+    if (myInfo) {
+      setInputs({
+        ...inputs,
+        email: myInfo?.email,
+        name: myInfo?.name,
+        address: myInfo?.address,
+        addressDetail: myInfo?.addressDetail,
+        phone: myInfo?.phone,
+      });
     }
-  }, [cartItems]);
+  }, [myInfo]);
 
-  // // checkedList 모두 체크되는 경우, AllItemsChecked => true로 업데이트
-  // useEffect(() => {
-  //   const allChecked = checkedList?.every((item) => item.checked);
-  //   if (allChecked) {
-  //     setAllItemsChecked(true);
-  //   } else {
-  //     setAllItemsChecked(false);
-  //   }
-  // }, [checkedList]);
+  useEffect(() => {
+    try {
+      const userRef = doc(db, `users/${auth?.currentUser?.uid}`);
 
-  // checkedList 모두 체크되는 경우, AllItemsChecked => true로 업데이트
-  // useEffect(() => {
-  //   const allChecked = checkedList?.every((item) => item.checked);
-  //   setAllItemsChecked(allChecked);
-  // }, [checkedList]);
-
-  // 각 체크박스 항목 클릭 시 checkedList 상태 업데이트
-  const handleCheckboxChange = useCallback(
-    (id: number) => {
-      setCheckedList((prev) =>
-        prev.map((item) => {
-          if (item.id === id) {
-            return { ...item, checked: !item.checked };
-          }
-          return item;
-        })
-      );
-    },
-    [setCheckedList]
-  );
-  const handleCheckAllChange = () => {
-    const newCheckedState = !allItemsChecked;
-    setAllItemsChecked(newCheckedState);
-    setCheckedList((prev) =>
-      prev.map((item) => ({
-        ...item,
-        checked: newCheckedState,
-      }))
-    );
-  };
-  // const handleCheckAllChange = () => {
-  //   setCheckedList((prev) =>
-  //     prev.map((item) => ({
-  //       ...item,
-  //       checked: true,
-  //     }))
-  //   );
-  //   setAllItemsChecked(true);
-  // };
-
-  console.log('checkedList', checkedList);
-  // const handleCheckAllChange = () => {
-  //   setCheckedList((prev) =>
-  //     prev.map((item) => ({
-  //       ...item,
-  //       checked: true,
-  //     }))
-  //   );
-
-  //   console.log('checkedList', checkedList);
-  //   setAllItemsChecked(!allItemsChecked);
-  // };
-
-  // const onChangeQuantity = useCallback(async (itemId: string, newQuantity: number) => {
-  //   const docRef = doc(db, `cart/${auth?.currentUser?.uid}/items`, itemId);
-
-  //   await updateDoc(docRef, {
-  //     quantity: newQuantity,
-  //   });
-  // }, []);
-
-  const onChangeQuantity = useCallback(async (itemId: string, newQuantity: number) => {
-    const collectionRef = collection(db, `cart/${auth?.currentUser?.uid}/items`); // <-- Correct usage
-    // const docRef = doc(collectionRef, itemId);
-    console.log('collectionRef', collectionRef);
-    // console.log('docRef', docRef);
-    // await updateDoc(docRef, {
-    //   quantity: newQuantity,
-    // });
+      getDoc(userRef).then((doc) => {
+        if (doc.exists()) {
+          console.log('Document data:', doc.data());
+          setMyInfo(doc.data());
+        } else {
+          console.log('No such document!');
+        }
+      });
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   }, []);
-  // const collectionRef = collection(db, `cart/${auth?.currentUser?.uid}/items`); // <-- Correct usage
-  // collection(db, `cart/${auth?.currentUser?.uid}/items`);
-  // const handleItemsDelete = useCallback(async () => {
-  //   checkedList?.map(async (item) => await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, item.docId)));
-  // }, []);
-  // const handleItemsDelete = useCallback(async () => {
-  //   await Promise.all(checkedList?.map(async (item) => await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, item.docId))));
-  // }, []);
 
-  // 선택 삭제
-  const handleItemsDelete = useCallback(async () => {
-    // checked 값이 true인 아이템들의 docId를 가져옴
-    const docIdsToDelete = checkedList.filter((item) => item.checked).map((item) => item.docId);
+  // 인풋에 값 입력 시
+  const onChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+
+      setInputs({
+        ...inputs,
+        [name]: value,
+      });
+    },
+    [inputs]
+  );
+
+  // 주소검색 모달
+  const handleModalToggle = useCallback(() => {
+    setModalState(!modalState);
+  }, []);
+
+  // 주소 검색 기능
+  const completeHandler = (data: any) => {
+    setZipcode(data?.zonecode); // 우편번호, 도로명 주소
+    setRoadAddress(data?.roadAddress); // 상세 주소
+
+    setInputs((prev) => ({
+      ...prev,
+      address: data?.roadAddress,
+    }));
+    setModalState(false);
+  };
+  useEffect(() => {
+    const uid = auth?.currentUser?.uid;
+    if (uid) {
+      fetchData(uid);
+    }
+  }, []);
+  useEffect(() => {
+    if (couponData) {
+      const tmp = couponData.map((item) => ({
+        value: item.title,
+        label: item.title,
+      }));
+      setCouponOption([{ value: '선택', label: '선택' }, ...tmp]);
+    }
+  }, [couponData]);
+
+  console.log('cartItems:::', cartItems);
+  console.log('couponData::::::', couponData);
+  console.log('selectedCouponInfo::::::', selectedCouponInfo);
+  console.log('inputs::::::', inputs);
+  console.log('myInfo::::::', myInfo);
+
+  useEffect(() => {
+    const selectedInfo = couponData?.find((item) => item.title === selectedCoupon);
+    setSelectedCouponInfo(selectedInfo);
+
+    if (selectedInfo) {
+      if (selectedInfo.amount) {
+        setDiscountPrice(selectedInfo.discount);
+      } else {
+        const total = cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0;
+        setDiscountPrice(total * selectedInfo.discount * 0.001);
+      }
+    }
+  }, [selectedCoupon, couponData, cartItems]);
+
+  const handleAllItemsCheckout = useCallback(async () => {
+    const uid = auth?.currentUser?.uid;
+    if (!uid) {
+      return;
+    }
+    const orderDetails = {
+      items: cartItems.map((item) => ({
+        id: item.id,
+        brand: item.brand,
+        name: item.name,
+        img: item.img,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      totalAmount: cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0),
+      discountAmount: discountPrice,
+      finalAmount: cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) + 50000 - discountPrice,
+      paymentMethod: '신용카드',
+      name: inputs.name,
+      address: inputs.address,
+      addressDetail: inputs.addressDetail,
+      phone: inputs.phone,
+      orderStatus: 'Pending',
+    };
+
+    console.log(orderDetails);
+    processOrder(uid, orderDetails);
+
+    // // 장바구니 내역 삭제
+    // const cartRef = doc(db, `users/${uid}/orderlist/${data?.id}`);
+    // await deleteDoc(cartRef);
+
+    const docIdsToDelete = cartItems.map((item) => item.docId);
 
     // docIdsToDelete 배열에 있는 모든 문서를 삭제
     await Promise.all(
@@ -206,42 +206,145 @@ export default function payment() {
         await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, docId));
       })
     );
-  }, [checkedList]);
+    // 선택된 쿠폰 삭제
+    if (selectedCoupon !== '선택') {
+      const selectedCouponDoc = couponData?.find((coupon) => coupon.title === selectedCoupon);
+      if (selectedCouponDoc && selectedCouponDoc.id) {
+        await deleteDoc(doc(db, `users/${uid}/coupons`, selectedCouponDoc.id));
+      }
+    }
+  }, [cartItems, discountPrice, inputs, selectedCoupon, couponData]);
 
-  // 전체 삭제
-  const handleAllItemsDelete = useCallback(async () => {
-    // checked 값이 true인 아이템들의 docId를 가져옴
-    const docIdsToDelete = checkedList.map((item) => item.docId);
-
-    // docIdsToDelete 배열에 있는 모든 문서를 삭제
-    await Promise.all(
-      docIdsToDelete.map(async (docId) => {
-        await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, docId));
-      })
-    );
-  }, [checkedList]);
-
-  // Set the "capital" field of the city 'DC'
-
+  // checked={checkedList?.find((check) => check.id === item.id)?.checked as boolean}
   return (
     <C.Wrapper>
-      결제 페이지
-      {cartItems.length > 0 &&
-        cartItems?.map((item, index) => (
-          <CartListItem
-            key={index}
-            item={item}
-            // quantity={quantity[index]}
-            quantity={item.quantity}
-            setQuantity={setQuantity}
-            // onChangeQuantity={onChangeQuantity}
-            selectId={item.id}
-            isGroup={true}
-            // handleChecked={handleChecked(item.id)}
-            checkedList={checkedList}
-            handleCheckboxChange={handleCheckboxChange}
+      <FlexBox $margin="0 0 20px">
+        <RegularFont $fontSize={16}>CART ({cartItems?.length})</RegularFont>
+      </FlexBox>
+
+      <C.PaymentList>
+        {cartItems.length > 0 &&
+          cartItems?.map((item, index) => (
+            <C.CartListItem key={index}>
+              <C.Img
+                src={item.img}
+                alt={item.name}
+                onClick={() => {
+                  router.push(`/product/${item.id}`);
+                }}
+              />
+              <C.ItemInfo>
+                <FlexBox $gap="2px" $flexDirection="column" $alignItems="start">
+                  <C.Brand>{item.brand}</C.Brand>
+                  <C.ProductName
+                    onClick={() => {
+                      router.push(`/product/${item.id}`);
+                    }}
+                  >
+                    {item.name}
+                  </C.ProductName>
+                </FlexBox>
+                <FlexBox $alignItems="end" $justifyContent="space-between">
+                  <C.Price>{item.price && `KRW ${numberFormatter(item.price)}`}</C.Price>
+                  <C.Price>{item.quantity && `QTY ${item.quantity}`}</C.Price>
+                </FlexBox>
+              </C.ItemInfo>
+            </C.CartListItem>
+          ))}
+      </C.PaymentList>
+      <FlexBox>
+        <StyledSelect
+          options={couponOption}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            setSelectedCoupon(newValue);
+          }}
+          value={selectedCoupon}
+        />
+        <C.RowText>KRW {cartItems && `${numberFormatter((cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000)}`}</C.RowText>
+      </FlexBox>
+      <C.AmountPayment>
+        <C.TotalPrice>
+          <C.RowTitle>합계</C.RowTitle>
+
+          <C.RowText>
+            KRW {cartItems && `${numberFormatter((cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) || 0) + 50000 - discountPrice)}`}
+          </C.RowText>
+        </C.TotalPrice>
+        <C.RowFlex>
+          <C.RowTitle>상품 구매금액</C.RowTitle>
+          <C.RowText>KRW {numberFormatter(cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0))}</C.RowText>
+        </C.RowFlex>
+        <C.RowFlex>
+          <C.RowTitle>배송비</C.RowTitle>
+          <C.RowText>KRW 50,000</C.RowText>
+        </C.RowFlex>
+        <C.RowFlex>
+          <C.RowTitle>쿠폰 사용</C.RowTitle>
+          <C.RowText>
+            {discountPrice === 0 ? '' : `-${numberFormatter(discountPrice)}`}
+            {/* {selectedCoupon} */}
+            {/* {selectedCouponInfo?.amount ? `${numberFormatter(selectedCouponInfo?.discount)} 원` : `${selectedCouponInfo?.discount} %`} */}
+          </C.RowText>
+        </C.RowFlex>
+      </C.AmountPayment>
+
+      <C.ShippingInfo>
+        배송 정보
+        <StyledInput placeholder="NAME *" required name="name" value={inputs.name} onChange={onChange} />
+        <J.InputWrap>
+          <StyledInput placeholder="ADDRESS" name="address" value={inputs.address} onChange={onChange} border />
+          <StyledButton
+            onClick={handleModalToggle}
+            title="주소 검색"
+            fontSize={12}
+            width={94}
+            height={30}
+            bgColor={theme.colors.lightGrayBgColor}
+            fontColor={theme.colors.blackColor}
+            border={`1px solid ${theme.colors.blackColor}`}
           />
-        ))}
+        </J.InputWrap>
+        <StyledInput placeholder="DETAILED ADDRESS" name="addressDetail" value={inputs.addressDetail} onChange={onChange} />
+        <StyledPhoneNumber placeholder="PHONENUMBER *" name="phone" value={inputs.phone} onChange={onChange} />
+        {modalState && (
+          <J.Modal>
+            <J.ModalTitle>우편번호 검색</J.ModalTitle>
+            <DaumPostcode onComplete={completeHandler} />
+            <J.ModalClose onClick={handleModalToggle}>
+              <IoMdClose size={16} />
+            </J.ModalClose>
+          </J.Modal>
+        )}
+      </C.ShippingInfo>
+      <FlexBox $gap="12px" $margin="16px auto 0" $justifyContent="center">
+        <StyledButton
+          title="전체 상품 주문"
+          fontSize={14}
+          width={110}
+          height={45}
+          padding="0 10px"
+          bgColor={theme.colors.blackColor}
+          fontColor={theme.colors.whiteColor}
+          border={`1px solid ${theme.colors.blackColor}`}
+          // onClick={handleAllItemsCheckout}
+          onClick={handleAllItemsCheckout}
+        />
+        <StyledButton
+          title="선택 상품 주문"
+          fontSize={14}
+          width={110}
+          height={45}
+          padding="0 10px"
+          bgColor={theme.colors.lightGrayBgColor}
+          fontColor={theme.colors.blackColor}
+          border={`1px solid ${theme.colors.blackColor}`}
+          onClick={() => {
+            // handleCheckoutItems('select');
+            // router.push('/cart/payment');
+          }}
+        />
+      </FlexBox>
     </C.Wrapper>
   );
 }

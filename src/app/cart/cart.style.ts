@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { RegularFont, SemiBoldFont } from "@components/styled/StyledComponents";
+import { MediumFont, RegularFont, SemiBoldFont } from "@components/styled/StyledComponents";
 import theme from "@styles/theme";
 
 export const Wrapper = styled.main`
@@ -43,6 +43,7 @@ export const MobileCart = styled.div`
 
 `;
 export const CartList = styled.div`
+  width: 100%;
   min-height: 200px;
   
  >div:last-child{
@@ -63,6 +64,7 @@ export const CartListHeader = styled.div`
   }
 `;
 export const AmountPayment = styled.div`
+  width: 100%;
  >div:last-child{
   border-bottom: 2px solid ${theme.colors.blackColor};
   padding-bottom: 60px;
@@ -93,4 +95,59 @@ export const RowText = styled(SemiBoldFont)`
   ${theme.devices.mobile} {
     ${theme.typography.sm}; 
   }
+`;
+export const CartListItem = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 20px;
+
+  ${theme.devices.mobile} {
+    gap: 10px;
+  }
+`;
+export const Img = styled.img`
+  max-width: 72px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  background: ${theme.colors.whiteColor};
+`;
+export const ItemInfo = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+`;
+export const Brand = styled(MediumFont)`
+  font-size: 12px;
+  text-decoration: underline;
+  margin-bottom: 2px;
+`;
+export const ProductName = styled(SemiBoldFont)`
+  font-size: 13px;
+  white-space: pre-wrap;
+`;
+export const Price = styled(RegularFont)`
+  font-size: 13px;
+  white-space: pre-wrap;
+`;
+export const PaymentList = styled.div`
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+  >div:first-child{
+  border-top: 2px solid ${theme.colors.blackColor};
+  padding-top: 16px;
+ }
+ >div:last-child{
+  border-bottom: 2px solid ${theme.colors.blackColor};
+  padding-bottom: 16px;
+ }
+`;
+export const ShippingInfo = styled.div`
+  width: 100%;
+  max-width: 500px;
+  margin-top: 40px;
 `;

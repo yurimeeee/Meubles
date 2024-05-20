@@ -21,7 +21,7 @@ import Loader from '@components/share/Loader';
 import CartListItem from '@components/feature/Cart/CartListItem';
 import StyledCheckbox from '@components/styled/StyledCheckbox';
 import { useRecoilState } from 'recoil';
-import { cartItemsState } from '@recoil/atoms';
+import { cartItemsState, paymentItemsState } from '@recoil/atoms';
 
 const Header = [
   // { label: '', minWidth: 45, width: 3 },
@@ -43,6 +43,7 @@ export default function CartPage() {
   const [cartItem, setCartItem] = useState<CartItem[] | null>(null);
   const [checkedList, setCheckedList] = useState<CheckedList[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
+  const [paymentItems, setPaymentItems] = useRecoilState<CartItem[] | null>(paymentItemsState);
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -218,7 +219,25 @@ export default function CartPage() {
     );
   }, [checkedList]);
 
-  // Set the "capital" field of the city 'DC'
+  // 상품 주문
+  const handleCheckoutItems = useCallback(
+    (type: string) => {
+      if (type === 'all') {
+        setPaymentItems(cartItems);
+      } else {
+        // 체크리스트에서 체크된 항목의 id 값을 추출합니다.
+        const checkedIds = checkedList.filter((item) => item.checked).map((item) => item.id);
+
+        // 카트 아이템 중 체크된 항목과 id가 일치하는 아이템을 필터링합니다.
+        const paymentItems = cartItems?.filter((item) => checkedIds.includes(item.id));
+
+        // setPaymentItems 함수를 사용하여 필터링된 아이템을 설정합니다.
+        setPaymentItems(paymentItems as any);
+      }
+      router.push('/cart/payment');
+    },
+    [checkedList]
+  );
 
   return (
     <C.Wrapper>
@@ -306,6 +325,7 @@ export default function CartPage() {
           border={`1px solid ${theme.colors.blackColor}`}
           // onClick={handleAllItemsDelete}
           onClick={() => {
+            handleCheckoutItems('all');
             // router.push('/cart/payment');
           }}
         />
@@ -319,6 +339,7 @@ export default function CartPage() {
           fontColor={theme.colors.blackColor}
           border={`1px solid ${theme.colors.blackColor}`}
           onClick={() => {
+            handleCheckoutItems('select');
             // router.push('/cart/payment');
           }}
         />

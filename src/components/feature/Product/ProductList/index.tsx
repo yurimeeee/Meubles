@@ -158,11 +158,6 @@ const ProductList = ({ categoryListData, uCate, NEW, BEST, searchData }: Product
     [currentPage]
   );
 
-  // 정렬 옵션 변경 핸들러
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortByOption(e.target.value);
-  };
-
   return (
     <Wrapper>
       {filteredProducts.length > 0 && (

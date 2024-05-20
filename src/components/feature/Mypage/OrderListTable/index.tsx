@@ -2,7 +2,7 @@ import { Loader } from '@components/share/BlankLoader';
 import TableHeader, { HeaderType } from '@components/share/Table/TableHeader';
 import { TableRow, TableCell, TableText, TableImg, ItemInfo, ProductName } from '@components/share/Table/table.style';
 
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { numberFormatter } from '@utils/formatter';
 import { TableBody } from '../../../share/Table/table.style';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,8 @@ import { NoResults } from '@components/styled/StyledComponents';
 import { Product } from '@type/types';
 import theme from '@styles/theme';
 import styled from 'styled-components';
+import { auth, db } from '@lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 type OrderListTableProps = {
   // headers: HeaderType[];
@@ -19,6 +21,23 @@ type OrderListTableProps = {
 
 const OrderListTable = ({ headers = [], data }: OrderListTableProps) => {
   const router = useRouter();
+  const [orderList, setOrderList] = useState<any[]>(0);
+
+  // 북마크 리스트 fetch
+  const fetchOrderData = useCallback(async () => {
+    const uid = auth?.currentUser?.uid;
+    const querySnapshot = await getDocs(collection(db, `users/${uid}/orderlist`));
+    const data = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setOrderList(data);
+  }, [auth?.currentUser?.uid]);
+
+  useEffect(() => {
+    fetchOrderData();
+  }, [fetchOrderData]);
+  console.log('orderList', orderList);
   return (
     <Wrapper>
       {/* <TableHeader headers={Header} /> */}

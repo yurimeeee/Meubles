@@ -13,3 +13,9 @@ export const cartItemsState = atom({
   key: 'cartItemsState',
   default: [] as CartItem[],
 });
+
+// 결제예정인 상품들
+export const paymentItemsState = atom({
+  key: 'paymentItemsState',
+  default: [] as CartItem[],
+});
