@@ -166,7 +166,6 @@ export default function Join() {
   // );
 
   const handleAccountEmailCheck = useCallback(async () => {
-    // const uid = auth?.currentUser?.uid;
     const couponCollection = `users`;
     const ref = collection(db, couponCollection);
     const q = query(ref, where('email', '==', inputs.email));
@@ -207,16 +206,16 @@ export default function Join() {
       return;
     }
 
+    // 회원가입
     createUserWithEmailAndPassword(auth, email.trim(), password)
       .then(async (userCredential) => {
-        // Signed in
         const user = userCredential.user;
         const uid = user.uid;
 
-        // Get a reference to the 'users' collection
+        // users 컬렉션 참조
         const usersCollection = collection(db, 'users');
 
-        // Add a document to the 'users' collection with the user's details
+        // users 컬렉션에 데이터 추가
         await setDoc(doc(usersCollection, uid), {
           email,
           name,
@@ -224,7 +223,6 @@ export default function Join() {
           addressDetail,
           phone,
         });
-        // toast.info(`${user.email} 님 회원가입 성공! 자동 로그인 되었습니다`);
         alert(`${name} 님 반갑습니다!`);
 
         // 신규 가입 쿠폰 발행
@@ -264,7 +262,6 @@ export default function Join() {
             fontColor={theme.colors.blackColor}
             border={`1px solid ${theme.colors.blackColor}`}
             onClick={handleAccountEmailCheck}
-            disabled
           />
         </J.InputWrap>
         <StyledInput placeholder="PASSWORD *" required type="password" name="password" value={inputs.password} onChange={onChange} />

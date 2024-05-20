@@ -18,7 +18,7 @@ export const Wrapper = styled.main`
   }
 `;
 export const NoResults = styled(RegularFont)`
-  height: 100px;
+  height: 200px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -43,6 +43,8 @@ export const MobileCart = styled.div`
 
 `;
 export const CartList = styled.div`
+  min-height: 200px;
+  
  >div:last-child{
   border-bottom: 2px solid ${theme.colors.blackColor};
  }

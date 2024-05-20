@@ -591,7 +591,7 @@ export const productData: Product[] = [
     id: 22,
   },
   {
-    u_category: 'SOUNDS',
+    u_category: 'ACCESSORIES',
     l_category: 'SPEAKER',
     brand: 'BRIONVEGA',
     name: 'RR-226 Radiofonografo White',
@@ -615,7 +615,7 @@ export const productData: Product[] = [
     id: 23,
   },
   {
-    u_category: 'SOUNDS',
+    u_category: 'ACCESSORIES',
     l_category: 'SPEAKER',
     brand: 'BRIONVEGA',
     name: '[예약판매] TS 217 Wearit (4Colors)',
@@ -642,7 +642,7 @@ export const productData: Product[] = [
     id: 24,
   },
   {
-    u_category: 'SOUNDS',
+    u_category: 'ACCESSORIES',
     l_category: 'SPEAKER',
     brand: 'BRIONVEGA',
     name: 'RR-231 Totem - Black',
@@ -669,7 +669,7 @@ export const productData: Product[] = [
     id: 25,
   },
   {
-    u_category: 'SOUNDS',
+    u_category: 'ACCESSORIES',
     l_category: 'SPEAKER',
     brand: 'VIFA',
     name: 'Copenhagen 2.0 - Sand Yellow',
@@ -699,7 +699,7 @@ export const productData: Product[] = [
     id: 26,
   },
   {
-    u_category: 'SOUNDS',
+    u_category: 'ACCESSORIES',
     l_category: 'SPEAKER',
     brand: 'VIFA',
     name: 'Oslo - Sand Yellow',

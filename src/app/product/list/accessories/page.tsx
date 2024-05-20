@@ -3,7 +3,7 @@
 import * as P from '../../product.style';
 import ProductList from '@components/feature/Product/ProductList';
 
-const categoryList = ['OBJECTS', 'MIRRORS'];
+const categoryList = ['SPEAKER', 'OBJECTS', 'MIRRORS'];
 
 const AccessoriesProductPage = () => {
   return (

@@ -110,29 +110,30 @@ export default function Login() {
           addressDetail: '',
           phone: '',
         });
+        router.push('/');
 
         // 동일 쿠폰 발행 여부 확인
         const couponCollection = `users/${uid}/coupon`;
         const ref = collection(db, couponCollection);
-        const q = query(ref, where('title', '==', '[SUMMER SPECIAL COUPON] 여름 맞이 특별 할인'));
+        const q = query(ref, where('title', '==', '신규 회원 10% 할인 쿠폰'));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.size > 0) {
           return;
-        }
-        router.push('/');
-        // 신규 가입 쿠폰 발행
-        const couponDetails = {
-          id: '0',
-          title: '신규 회원 10% 할인 쿠폰',
-          expiration: 'indefinite',
-          discount: 10,
-          amount: false,
-          percentage: true,
-          status: true,
-        };
+        } else {
+          // 신규 가입 쿠폰 발행
+          const couponDetails = {
+            id: '0',
+            title: '신규 회원 10% 할인 쿠폰',
+            expiration: 'indefinite',
+            discount: 10,
+            amount: false,
+            percentage: true,
+            status: true,
+          };
 
-        await issueCoupon(uid, couponDetails, '신규 가입 쿠폰이 발행되었습니다.');
+          await issueCoupon(uid, couponDetails, '신규 가입 쿠폰이 발행되었습니다.');
+        }
       })
       .catch((error) => {
         alert('로그인에 실패했습니다. 다시 시도해주세요.');
@@ -180,7 +181,7 @@ export default function Login() {
           onClick={handleGoogleLogin}
         />
       </FlexBox>
-      <L.Password onClick={onChangePassword}>비밀번호 찾기</L.Password>
+      {/* <L.Password onClick={onChangePassword}>비밀번호 찾기</L.Password> */}
     </L.Wrapper>
   );
 }

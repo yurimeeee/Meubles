@@ -48,8 +48,6 @@ const Header = () => {
       setActive('FURNITURE');
     } else if (pathname.includes('lighting')) {
       setActive('LIGHTING');
-    } else if (pathname.includes('sounds')) {
-      setActive('SOUNDS');
     } else if (pathname.includes('accessories')) {
       setActive('ACCESSORIES');
     } else if (pathname.includes('new')) {
@@ -186,9 +184,6 @@ const Header = () => {
             <MobileMenuItem href={'/product/list/lighting'} onClick={toggleMobileMenu}>
               LIGHTING
             </MobileMenuItem>
-            <MobileMenuItem href={'/product/list/sounds'} onClick={toggleMobileMenu}>
-              SOUNDS
-            </MobileMenuItem>
             <MobileMenuItem href={'/product/list/accessories'} onClick={toggleMobileMenu}>
               ACCESSORIES
             </MobileMenuItem>
@@ -231,9 +226,6 @@ const Header = () => {
           </MenuItem>
           <MenuItem href={'/product/list/lighting'} $Active={active === 'LIGHTING'}>
             LIGHTING
-          </MenuItem>
-          <MenuItem href={'/product/list/sounds'} $Active={active === 'SOUNDS'}>
-            SOUNDS
           </MenuItem>
           <MenuItem href={'/product/list/accessories'} $Active={active === 'ACCESSORIES'}>
             ACCESSORIES
