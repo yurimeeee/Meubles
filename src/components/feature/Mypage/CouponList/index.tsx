@@ -186,6 +186,7 @@ const Wrapper = styled.div`
   width: 100%;
   max-width: 1280px;
 `;
+
 const Description = styled.div``;
 const RegiserWrap = styled.div`
   width: 100%;
@@ -208,6 +209,8 @@ const DescText = styled(RegularFont)`
 const CouponListWrap = styled.div`
   display: flex;
   flex-direction: column;
+  border-top: 2px solid ${theme.colors.blackColor};
+  border-bottom: 2px solid ${theme.colors.blackColor};
 
   ${theme.devices.mobile} {
     display: none;

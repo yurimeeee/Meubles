@@ -158,7 +158,7 @@ export default function MypageSettingProfile() {
 
       <FlexBox $justifyContent="space-between" $gap="8px">
         <StyledButton
-          title="SAVE"
+          title="변경"
           onClick={handleUserInfoUpdate}
           fontSize={16}
           bgColor={theme.colors.blackColor}
@@ -166,7 +166,7 @@ export default function MypageSettingProfile() {
           border={`1px solid ${theme.colors.blackColor}`}
         />
         <StyledButton
-          title="CANCEL"
+          title="취소"
           onClick={handleUpdateCancel}
           fontSize={16}
           bgColor={theme.colors.lightGrayBgColor}

@@ -168,7 +168,6 @@ export default function Join() {
   const handleAccountEmailCheck = useCallback(async () => {
     // const uid = auth?.currentUser?.uid;
     const couponCollection = `users`;
-    alert('sdf');
     const ref = collection(db, couponCollection);
     const q = query(ref, where('email', '==', inputs.email));
     const querySnapshot = await getDocs(q);
@@ -314,7 +313,7 @@ export default function Join() {
       </J.Terms>
       <FlexBox $flexDirection="column" $justifyContent="space-between" $gap="8px">
         <StyledButton
-          title="JOIN"
+          title="회원가입"
           onClick={handleSignin}
           fontSize={16}
           bgColor={theme.colors.lightGrayBgColor}

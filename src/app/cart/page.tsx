@@ -306,7 +306,7 @@ export default function CartPage() {
           border={`1px solid ${theme.colors.blackColor}`}
           // onClick={handleAllItemsDelete}
           onClick={() => {
-            router.push('/cart/payment');
+            // router.push('/cart/payment');
           }}
         />
         <StyledButton
@@ -318,7 +318,9 @@ export default function CartPage() {
           bgColor={theme.colors.lightGrayBgColor}
           fontColor={theme.colors.blackColor}
           border={`1px solid ${theme.colors.blackColor}`}
-          onClick={handleItemsDelete}
+          onClick={() => {
+            // router.push('/cart/payment');
+          }}
         />
       </FlexBox>
     </C.Wrapper>

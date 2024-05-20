@@ -13,7 +13,7 @@ import StyledCheckbox from '@components/styled/StyledCheckbox';
 import StyledButton from '@components/styled/StyledButton';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { useCouponIssuer } from '@hooks/useCouponIssuer';
 
 export default function Login() {
@@ -66,7 +66,7 @@ export default function Login() {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        // alert(`로그인 되었습니다`);
+        alert(`로그인 되었습니다`);
 
         if (isSaveId) {
           // 아이디 저장이 체크되어 있을 때만 실행
@@ -88,14 +88,6 @@ export default function Login() {
 
   // 구글 로그인 버튼 클릭 시 구글 소셜 로그인
   const handleGoogleLogin = async () => {
-    // try {
-    //   // const provider = new GoogleAuthProvider();
-    //   await signInWithPopup(auth, provider);
-    //   router.back();
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
     signInWithPopup(auth, provider)
       .then(async (result) => {
         // dispatch(yesLogin());
@@ -106,6 +98,19 @@ export default function Login() {
           router.push('/');
           return;
         }
+
+        // 유저 컬렉션 참조
+        const usersCollection = collection(db, 'users');
+
+        // 소셜 로그인 정보 유저 db에 저장
+        await setDoc(doc(usersCollection, uid), {
+          email: auth?.currentUser?.email,
+          name: auth?.currentUser?.displayName,
+          address: '',
+          addressDetail: '',
+          phone: '',
+        });
+
         // 동일 쿠폰 발행 여부 확인
         const couponCollection = `users/${uid}/coupon`;
         const ref = collection(db, couponCollection);
@@ -115,7 +120,7 @@ export default function Login() {
         if (querySnapshot.size > 0) {
           return;
         }
-
+        router.push('/');
         // 신규 가입 쿠폰 발행
         const couponDetails = {
           id: '0',
@@ -128,7 +133,6 @@ export default function Login() {
         };
 
         await issueCoupon(uid, couponDetails, '신규 가입 쿠폰이 발행되었습니다.');
-        router.push('/');
       })
       .catch((error) => {
         alert('로그인에 실패했습니다. 다시 시도해주세요.');
@@ -162,13 +166,13 @@ export default function Login() {
         <StyledInput placeholder="PASSWORD" type="password" name="password" value={inputs.password} required onChange={onChange} />
       </L.Form>
       <FlexBox $justifyContent="space-between" $margin="0 0 32px">
-        <StyledCheckbox label="Save ID" checkboxId="isSaveId" checked={isSaveId} onChange={() => setIsSaveId(!isSaveId)} />
-        <L.LinkButton href={'/join'}>Register</L.LinkButton>
+        <StyledCheckbox label="아이디 저장" checkboxId="isSaveId" checked={isSaveId} onChange={() => setIsSaveId(!isSaveId)} />
+        <L.LinkButton href={'/join'}>회원가입</L.LinkButton>
       </FlexBox>
       <FlexBox $flexDirection="column" $justifyContent="space-between" $gap="8px">
-        <StyledButton title="LOGIN" onClick={handleLogin} fontSize={16} bgColor={theme.colors.blackColor} fontColor={theme.colors.whiteColor} />
+        <StyledButton title="로그인" onClick={handleLogin} fontSize={16} bgColor={theme.colors.blackColor} fontColor={theme.colors.whiteColor} />
         <StyledButton
-          title="LOGIN FOR GOOGLE"
+          title="구글 로그인"
           fontSize={16}
           bgColor={theme.colors.lightGrayBgColor}
           fontColor={theme.colors.blackColor}
@@ -176,7 +180,7 @@ export default function Login() {
           onClick={handleGoogleLogin}
         />
       </FlexBox>
-      <RegularFont onClick={onChangePassword}>Have you forgotten your password?</RegularFont>
+      <L.Password onClick={onChangePassword}>비밀번호 찾기</L.Password>
     </L.Wrapper>
   );
 }

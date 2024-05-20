@@ -12,11 +12,6 @@ import WishListTable from '@components/feature/Mypage/WishListTable';
 import CouponList from '@components/feature/Mypage/CouponList';
 
 const OrderListHeader = [
-  // { label: '', minWidth: 45, width: 3 },
-  // { label: 'ITEM', width: 12.5 },
-  // { label: 'QYT', minWidth: 115, width: 10 },
-  // { label: 'PRICE', minWidth: 115, width: 10 },
-  // { label: 'DISCOUNT', minWidth: 115, width: 10 },
   { label: 'ORDER DATE', width: 20 },
   { label: 'ITEM', width: 40 },
   { label: 'QYT', width: 10 },
@@ -71,13 +66,13 @@ export default function Mypage() {
 
   // console.log('bookmarkItems', bookmarkItems);
   console.log('myInfo::', myInfo);
-  console.log('auth?.currentUser?.uid::', auth?.currentUser?.uid);
+  console.log('auth?.currentUser?.uid::', auth?.currentUser);
   return (
     <M.Wrapper>
       <M.AccountWrap>
         <FlexBox $gap="12px" $flexDirection="column" $alignItems="start">
           <M.MyAccount>MY ACCOUNT</M.MyAccount>
-          <M.Welcome>반갑습니다. {myInfo?.name} 님!</M.Welcome>
+          {/* <M.Welcome>반갑습니다. {myInfo ? `${myInfo?.name} 님` : `${auth?.currentUser?.displayName}님`} </M.Welcome> */}
         </FlexBox>
         <M.Setting>
           <M.SettingLink href="/mypage/setting/profile">회원 정보 수정</M.SettingLink>
@@ -94,10 +89,10 @@ export default function Mypage() {
           COUPON
           <M.ActiveBar $Active={active === 'COUPON'} />
         </M.CategoryItem>
-        <M.CategoryItem onClick={() => setActive('POINT')} $Active={active === 'POINT'}>
+        {/* <M.CategoryItem onClick={() => setActive('POINT')} $Active={active === 'POINT'}>
           POINT
           <M.ActiveBar $Active={active === 'POINT'} />
-        </M.CategoryItem>
+        </M.CategoryItem> */}
         <M.CategoryItem onClick={() => setActive('WISHLIST')} $Active={active === 'WISHLIST'}>
           WISHLIST
           <M.ActiveBar $Active={active === 'WISHLIST'} />

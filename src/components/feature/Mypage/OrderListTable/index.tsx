@@ -8,6 +8,8 @@ import { TableBody } from '../../../share/Table/table.style';
 import { useRouter } from 'next/navigation';
 import { NoResults } from '@components/styled/StyledComponents';
 import { Product } from '@type/types';
+import theme from '@styles/theme';
+import styled from 'styled-components';
 
 type OrderListTableProps = {
   // headers: HeaderType[];
@@ -18,7 +20,7 @@ type OrderListTableProps = {
 const OrderListTable = ({ headers = [], data }: OrderListTableProps) => {
   const router = useRouter();
   return (
-    <>
+    <Wrapper>
       {/* <TableHeader headers={Header} /> */}
       <TableRow>
         {headers.map((header: HeaderType, index: number) => {
@@ -68,8 +70,13 @@ const OrderListTable = ({ headers = [], data }: OrderListTableProps) => {
           <NoResults>주문 내역이 없습니다</NoResults>
         )}
       </TableBody>
-    </>
+    </Wrapper>
   );
 };
 
 export default OrderListTable;
+
+const Wrapper = styled.div`
+  border-top: 2px solid ${theme.colors.blackColor};
+  border-bottom: 2px solid ${theme.colors.blackColor};
+`;

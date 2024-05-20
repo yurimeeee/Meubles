@@ -3,6 +3,7 @@
 import styled from "styled-components";
 import Link from "next/link";
 import theme from "@styles/theme";
+import { RegularFont } from "@components/styled/StyledComponents";
 
 export const Wrapper = styled.main`
   display: flex;
@@ -27,6 +28,12 @@ export const Form = styled.div`
 `;
 export const LinkButton = styled(Link)`
   font-size: 14px;
+`;
+export const Password = styled(RegularFont)`
+  font-size: 14px;
+  margin-top: 10px;
+  color: ${theme.colors.grayFontColor};
+  cursor: pointer;
 `;
 
 
