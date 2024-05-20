@@ -15,6 +15,8 @@ const ProductPage = () => {
       setTitle('LIGHTING');
     } else if (pathname.includes('sounds')) {
       setTitle('SOUNDS');
+    } else if (pathname.includes('accessories')) {
+      setTitle('ACCESSORIES');
     }
   }, [pathname]);
 

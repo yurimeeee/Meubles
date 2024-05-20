@@ -50,6 +50,8 @@ const Header = () => {
       setActive('LIGHTING');
     } else if (pathname.includes('sounds')) {
       setActive('SOUNDS');
+    } else if (pathname.includes('accessories')) {
+      setActive('ACCESSORIES');
     } else if (pathname.includes('new')) {
       setActive('NEW');
     } else if (pathname.includes('best')) {
@@ -187,6 +189,9 @@ const Header = () => {
             <MobileMenuItem href={'/product/list/sounds'} onClick={toggleMobileMenu}>
               SOUNDS
             </MobileMenuItem>
+            <MobileMenuItem href={'/product/list/accessories'} onClick={toggleMobileMenu}>
+              ACCESSORIES
+            </MobileMenuItem>
           </MobileMenu>
           {/* <MobileMenuButton> */}
           <MobileMenuFlex>
@@ -229,6 +234,9 @@ const Header = () => {
           </MenuItem>
           <MenuItem href={'/product/list/sounds'} $Active={active === 'SOUNDS'}>
             SOUNDS
+          </MenuItem>
+          <MenuItem href={'/product/list/accessories'} $Active={active === 'ACCESSORIES'}>
+            ACCESSORIES
           </MenuItem>
         </Menu>
         <RowFlexBox>

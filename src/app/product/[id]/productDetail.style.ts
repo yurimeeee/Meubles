@@ -18,7 +18,7 @@ export const Wrapper = styled.div`
 
   ${theme.devices.desktop} {
     padding: 100px 0 0;
-    gap: 60px;
+    /* gap: 60px; */
   }
 
   ${theme.devices.mobile} {
@@ -28,16 +28,10 @@ export const Wrapper = styled.div`
   }
 `;
 export const Info = styled.div`
-  margin-left: 92px;
   max-width: 390px;
+  width: 100%;
 
-  ${theme.devices.tablet} {
-    margin-left: 20px;
-    /* max-width: 100%; */
-    /* background: pink; */
-  }
   ${theme.devices.mobile} {
-    margin-left: 0;
     max-width: 100%;
   }
 `;
@@ -45,10 +39,6 @@ export const ImgBox = styled.div`
   width: 100%;
   max-width: 460px;
   min-width: 310px;
-
-  /* ${theme.devices.notebook} {
-    max-width: 400px;
-  } */
 
   ${theme.devices.mobile} {
     max-width: 680px;
