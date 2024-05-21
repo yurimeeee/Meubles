@@ -43,7 +43,7 @@ export default function CartPage() {
   const [cartItem, setCartItem] = useState<CartItem[] | null>(null);
   const [checkedList, setCheckedList] = useState<CheckedList[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[] | null>(null);
-  const [paymentItems, setPaymentItems] = useRecoilState<CartItem[] | null>(paymentItemsState);
+  const [paymentItems, setPaymentItems] = useRecoilState<CartItem[]>(paymentItemsState);
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -221,7 +221,7 @@ export default function CartPage() {
   const handleCheckoutItems = useCallback(
     (type: string) => {
       if (type === 'all') {
-        setPaymentItems(cartItems);
+        setPaymentItems(cartItems as CartItem[]);
       } else {
         // 체크리스트에서 체크된 항목의 id 값을 추출합니다.
         const checkedIds = checkedList.filter((item) => item.checked).map((item) => item.id);
