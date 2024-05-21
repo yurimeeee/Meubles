@@ -11,7 +11,7 @@ import { Product } from '@type/types';
 import theme from '@styles/theme';
 import styled from 'styled-components';
 import { auth, db } from '@lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 
 type OrderListTableProps = {
   // headers: HeaderType[];
@@ -21,12 +21,16 @@ type OrderListTableProps = {
 
 const OrderListTable = ({ headers = [], data }: OrderListTableProps) => {
   const router = useRouter();
-  const [orderList, setOrderList] = useState<any[]>(0);
+  const [orderList, setOrderList] = useState<any[]>([]);
 
   // 북마크 리스트 fetch
   const fetchOrderData = useCallback(async () => {
     const uid = auth?.currentUser?.uid;
-    const querySnapshot = await getDocs(collection(db, `users/${uid}/orderlist`));
+    // const querySnapshot = await getDocs(collection(db, `users/${uid}/orderlist`));
+    // Firestore 쿼리에서 타임스탬프 필드를 기준으로 내림차순 정렬
+    const q = query(collection(db, `users/${uid}/orderlist`), orderBy('timestamp', 'desc'));
+
+    const querySnapshot = await getDocs(q);
     const data = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -120,7 +124,6 @@ const Wrapper = styled.div`
   border-bottom: 2px solid ${theme.colors.blackColor};
 `;
 const OrderWrap = styled.div`
-  /* border-top: 2px solid ${theme.colors.blackColor}; */
   border-bottom: 1px solid ${theme.colors.blackColor};
 
   &:last-child {

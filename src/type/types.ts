@@ -61,8 +61,9 @@ export type Coupon = {
   expiration: string;  // 쿠폰 만료일
   percentage: boolean; // 정률제
   amount: boolean;     // 정액제
-  minPrice?: number;    // 최소 결제 금액
-  status?: boolean;     // 쿠폰 상태
+  minPrice?: number;   // 최소 결제 금액
+  status?: boolean;    // 쿠폰 상태
+  docId: string;       // 쿠폰 문서 ID
 
 }
 

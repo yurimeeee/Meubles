@@ -35,7 +35,7 @@ const CouponList = () => {
       fetchData(uid);
     }
   }, [uid, fetchData]);
-
+  console.log('couponData:::', couponData);
   // 인풋에 값 입력 시
   const onChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +131,7 @@ const CouponList = () => {
           couponData.map((item, idx) => (
             <TableRow key={idx} $height={50} $disabled={!item?.status}>
               <TableCell $width={Header[0].width}>
-                <TableText>{item.status ? '사용 가능' : '사용 불가'}</TableText>
+                <TableText>{item.status ? '사용 가능' : '사용 완료'}</TableText>
               </TableCell>
               <TableCell $width={Header[1].width}>
                 <TableText>{item.title}</TableText>
@@ -139,10 +139,10 @@ const CouponList = () => {
               <TableCell $width={Header[2].width}>
                 <TableText>{item.amount ? `${numberFormatter(item.discount)} 원` : `${item.discount} %`}</TableText>
               </TableCell>
-              <TableCell $width={Header[3].width} $padding="16px 0">
+              <TableCell $width={Header[3].width}>
                 <TableText>{item.expiration !== 'indefinite' ? item.expiration : '무기한'}</TableText>
               </TableCell>
-              <TableCell $width={Header[4].width} $padding="16px 0">
+              <TableCell $width={Header[4].width}>
                 <TableText>{item.minPrice ? `최소 결제 금액 ${numberFormatter(item.minPrice)} 원` : '-'}</TableText>
               </TableCell>
             </TableRow>
@@ -163,7 +163,7 @@ const CouponList = () => {
               <SmallText>{item.minPrice ? `최소 결제 금액 ${numberFormatter(item.minPrice)} 원` : '-'}</SmallText>
               <FlexBox $justifyContent="space-between" $margin="10px 0 0">
                 <SmallText $fontColor={theme.colors.deepGrayFontColor}>{item.expiration}</SmallText>
-                <SmallText $fontColor={theme.colors.deepGrayFontColor}>{item.status ? '사용 가능' : '사용 불가'}</SmallText>
+                <SmallText $fontColor={theme.colors.deepGrayFontColor}>{item.status ? '사용 가능' : '사용 완료'}</SmallText>
               </FlexBox>
             </CouponCard>
           ))

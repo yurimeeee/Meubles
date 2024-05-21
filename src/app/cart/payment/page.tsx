@@ -3,7 +3,7 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Unsubscribe } from 'firebase/auth';
-import { collection, deleteDoc, doc, DocumentData, getDoc, onSnapshot, query, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, DocumentData, getDoc, onSnapshot, query, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@lib/firebase';
 import { toast } from 'react-toastify';
 
@@ -64,7 +64,6 @@ export default function payment() {
   const [roadAddress, setRoadAddress] = useState<string>('');
 
   const [inputs, setInputs] = useState({
-    email: myInfo?.email,
     name: myInfo?.name,
     address: myInfo?.address,
     addressDetail: myInfo?.addressDetail,
@@ -75,7 +74,6 @@ export default function payment() {
     if (myInfo) {
       setInputs({
         ...inputs,
-        email: myInfo?.email,
         name: myInfo?.name,
         address: myInfo?.address,
         addressDetail: myInfo?.addressDetail,
@@ -141,6 +139,7 @@ export default function payment() {
       const tmp = couponData.map((item) => ({
         value: item.title,
         label: item.title,
+        id: item.docId,
       }));
       setCouponOption([{ value: '선택', label: '선택' }, ...tmp]);
     }
@@ -167,10 +166,19 @@ export default function payment() {
   }, [selectedCoupon, couponData, cartItems]);
 
   const handleAllItemsCheckout = useCallback(async () => {
+    const { name, address, addressDetail, phone } = inputs;
+
+    // 필수 항목 유효성 검사
+    if (!name || !address || !addressDetail || !phone) {
+      alert('필수 항목을 모두 입력해주세요');
+      return;
+    }
+
     const uid = auth?.currentUser?.uid;
     if (!uid) {
       return;
     }
+
     const orderDetails = {
       items: cartItems.map((item) => ({
         id: item.id,
@@ -180,40 +188,108 @@ export default function payment() {
         price: item.price,
         quantity: item.quantity,
       })),
-      totalAmount: cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0),
+      totalAmount: cartItems.reduce((total, item) => total + Number(item.price) * item.quantity, 0),
       discountAmount: discountPrice,
-      finalAmount: cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) + 50000 - discountPrice,
+      finalAmount: cartItems.reduce((total, item) => total + Number(item.price) * item.quantity, 0) + 50000 - discountPrice,
       paymentMethod: '신용카드',
-      name: inputs.name,
-      address: inputs.address,
-      addressDetail: inputs.addressDetail,
-      phone: inputs.phone,
+      name,
+      address,
+      addressDetail,
+      phone,
       orderStatus: 'Pending',
     };
 
     console.log(orderDetails);
-    processOrder(uid, orderDetails);
 
-    // // 장바구니 내역 삭제
-    // const cartRef = doc(db, `users/${uid}/orderlist/${data?.id}`);
-    // await deleteDoc(cartRef);
+    try {
+      await processOrder(uid, orderDetails);
 
-    const docIdsToDelete = cartItems.map((item) => item.docId);
+      const docIdsToDelete = cartItems.map((item) => item.docId);
 
-    // docIdsToDelete 배열에 있는 모든 문서를 삭제
-    await Promise.all(
-      docIdsToDelete.map(async (docId) => {
-        await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, docId));
-      })
-    );
-    // 선택된 쿠폰 삭제
-    if (selectedCoupon !== '선택') {
-      const selectedCouponDoc = couponData?.find((coupon) => coupon.title === selectedCoupon);
-      if (selectedCouponDoc && selectedCouponDoc.id) {
-        await deleteDoc(doc(db, `users/${uid}/coupons`, selectedCouponDoc.id));
+      // 장바구니 내역 삭제
+      await Promise.all(
+        docIdsToDelete.map(async (docId) => {
+          await deleteDoc(doc(db, `cart/${uid}/items`, docId));
+        })
+      );
+
+      // 선택된 쿠폰 삭제
+      if (selectedCoupon !== '선택' && selectedCouponInfo?.docId) {
+        await updateDoc(doc(db, `users/${uid}/coupon`, selectedCouponInfo.docId), { status: false });
       }
+
+      // 포인트 적립
+      const pointCollection = collection(db, `users/${uid}/point`);
+      const pointAmount = cartItems.reduce((total, item) => total + Number(item.price) * item.quantity, 0) * 0.0001;
+
+      // 포인트 컬렉션에 데이터 추가
+      await setDoc(doc(pointCollection, uid), { point: pointAmount });
+    } catch (error) {
+      console.error('Error processing order:', error);
+      alert('주문 처리에 실패했습니다. 다시 시도해주세요.');
     }
-  }, [cartItems, discountPrice, inputs, selectedCoupon, couponData]);
+  }, [cartItems, discountPrice, inputs, selectedCoupon, selectedCouponInfo, processOrder]);
+
+  // const handleAllItemsCheckout = useCallback(async () => {
+  //   const { name, address, addressDetail, phone } = inputs;
+
+  //   if (name === '' || address === '' || addressDetail === '' || phone === '') {
+  //     alert('필수 항목을 모두 입력해주세요');
+  //     return;
+  //   }
+
+  //   const uid = auth?.currentUser?.uid;
+  //   if (!uid) {
+  //     return;
+  //   }
+  //   const orderDetails = {
+  //     items: cartItems.map((item) => ({
+  //       id: item.id,
+  //       brand: item.brand,
+  //       name: item.name,
+  //       img: item.img,
+  //       price: item.price,
+  //       quantity: item.quantity,
+  //     })),
+  //     totalAmount: cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0),
+  //     discountAmount: discountPrice,
+  //     finalAmount: cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) + 50000 - discountPrice,
+  //     paymentMethod: '신용카드',
+  //     name: inputs.name,
+  //     address: inputs.address,
+  //     addressDetail: inputs.addressDetail,
+  //     phone: inputs.phone,
+  //     orderStatus: 'Pending',
+  //   };
+
+  //   console.log(orderDetails);
+  //   processOrder(uid, orderDetails);
+
+  //   // // 장바구니 내역 삭제
+  //   // const cartRef = doc(db, `users/${uid}/orderlist/${data?.id}`);
+  //   // await deleteDoc(cartRef);
+
+  //   const docIdsToDelete = cartItems.map((item) => item.docId);
+
+  //   // docIdsToDelete 배열에 있는 모든 문서를 삭제
+  //   await Promise.all(
+  //     docIdsToDelete.map(async (docId) => {
+  //       await deleteDoc(doc(db, `cart/${auth?.currentUser?.uid}/items`, docId));
+  //     })
+  //   );
+  //   // 선택된 쿠폰 삭제
+  //   if (selectedCoupon !== '선택' && selectedCouponInfo?.docId) {
+  //     await updateDoc(doc(db, `users/${uid}/coupon`, selectedCouponInfo.docId), { status: false });
+  //   }
+
+  //   // 포인트 적립
+  //   const pointCollection = collection(db, `users/${uid}/point`);
+
+  //   // point 컬렉션에 데이터 추가
+  //   await setDoc(doc(pointCollection, uid), {
+  //     point: cartItems?.reduce((total, item) => total + Number(item.price) * item.quantity, 0) * 0.0001,
+  //   });
+  // }, [cartItems, discountPrice, inputs, selectedCoupon, couponData]);
 
   // checked={checkedList?.find((check) => check.id === item.id)?.checked as boolean}
   return (
