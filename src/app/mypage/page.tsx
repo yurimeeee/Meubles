@@ -31,10 +31,7 @@ export default function Mypage() {
 
       getDoc(userRef).then((doc) => {
         if (doc.exists()) {
-          console.log('Document data:', doc.data());
           setMyInfo(doc.data());
-        } else {
-          console.log('No such document!');
         }
       });
     } catch (error) {
@@ -55,7 +52,6 @@ export default function Mypage() {
 
   //   fetchData();
   // }, [auth?.currentUser?.uid]);
-  // console.log('bookmarkList', bookmarkList);
 
   // useEffect(() => {
   //   if (bookmarkList && productData) {
@@ -64,9 +60,6 @@ export default function Mypage() {
   //   }
   // }, [bookmarkList]);
 
-  // console.log('bookmarkItems', bookmarkItems);
-  console.log('myInfo::', myInfo);
-  console.log('auth?.currentUser?.uid::', auth?.currentUser);
   return (
     <M.Wrapper>
       <M.AccountWrap>

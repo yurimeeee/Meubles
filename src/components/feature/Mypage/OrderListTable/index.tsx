@@ -1,6 +1,6 @@
 import { Loader } from '@components/share/BlankLoader';
 import TableHeader, { HeaderType } from '@components/share/Table/TableHeader';
-import { TableRow, TableCell, TableText, TableImg, ItemInfo, ProductName } from '@components/share/Table/table.style';
+import { TableRow, TableCell, TableText, TableImg, ItemInfo, ProductName, Brand, CartTableRow } from '@components/share/Table/table.style';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { numberFormatter } from '@utils/formatter';
@@ -38,52 +38,72 @@ const OrderListTable = ({ headers = [], data }: OrderListTableProps) => {
     fetchOrderData();
   }, [fetchOrderData]);
   console.log('orderList', orderList);
+
+  function convertTimestampToDate(timestamp: any) {
+    const { seconds, nanoseconds } = timestamp;
+
+    // seconds와 nanoseconds를 합쳐서 밀리초 단위의 시간을 계산
+    const milliseconds = seconds * 1000 + nanoseconds / 1000000;
+
+    // 밀리초 단위의 시간을 Date 객체로 변환
+    const date = new Date(milliseconds);
+
+    // 날짜를 원하는 형식으로 변환 (YYYY-MM-DD)
+    const formattedDate = date.toISOString().split('T')[0];
+
+    return formattedDate;
+  }
+
   return (
     <Wrapper>
       {/* <TableHeader headers={Header} /> */}
       <TableRow>
         {headers.map((header: HeaderType, index: number) => {
           return (
-            <TableCell key={`${index}-table-header`} $minWidth={header?.minWidth} $width={header.width}>
+            <TableCell key={`${index}-table-header`} $minWidth={header?.minWidth} $width={header.width} $justifyContent="center">
               {header.label}
             </TableCell>
           );
         })}
       </TableRow>
       <TableBody>
-        {data === null ? (
+        {orderList === null ? (
           <Loader />
-        ) : data?.length > 0 ? (
-          data?.map((item: any, index: number) => (
-            <TableRow $height={120}>
-              <TableCell $minWidth={headers[0].minWidth} $width={headers[0].width}>
-                <TableText></TableText>
-              </TableCell>
-              <TableCell
-                $minWidth={headers[1].minWidth}
-                $width={headers[1].width}
-                // onClick={() => {
-                //   router.push(`/product/${item.id}`);
-                // }}
-                $padding="10px 0"
-              >
-                {/* <TableImg src={item.img} alt={item.name} /> */}
-                <ItemInfo>
-                  {/* <Brand>{item.brand}</Brand>
-                  <ProductName>{item.name}</ProductName> */}
-                </ItemInfo>
-                {/* <TableText>{item?.name}</TableText> */}
-              </TableCell>
-              <TableCell $minWidth={headers[2].minWidth} $width={headers[3].width} $padding="16px 0">
-                <TableText></TableText>
-              </TableCell>
-              <TableCell $minWidth={headers[3].minWidth} $width={headers[3].width} $padding="16px 0">
-                {/* <TableText>{numberFormatter(data.price * data.quantity)}</TableText> */}
-              </TableCell>
-              <TableCell $minWidth={headers[4].minWidth} $width={headers[4].width} $padding="16px 0">
-                <TableText>{'-'}</TableText>
-              </TableCell>
-            </TableRow>
+        ) : orderList?.length > 0 ? (
+          orderList?.map((item: any, idx: number) => (
+            <OrderWrap key={idx}>
+              {item.items?.map((product: any, idx: number) => (
+                <CartTableRow $height={120}>
+                  <TableCell $minWidth={headers[0].minWidth} $width={headers[0].width}>
+                    <TableText>{convertTimestampToDate(item.timestamp)}</TableText>
+                  </TableCell>
+                  <TableCell
+                    $minWidth={headers[1].minWidth}
+                    $width={headers[1].width}
+                    // onClick={() => {
+                    //   router.push(`/product/${item.id}`);
+                    // }}
+                    // $padding="10px 0"
+                  >
+                    <TableImg src={product.img} alt={product.name} />
+                    <ItemInfo>
+                      <Brand>{product.brand}</Brand>
+                      <ProductName>{product.name}</ProductName>
+                    </ItemInfo>
+                    {/* <TableText>{product?.name}</TableText> */}
+                  </TableCell>
+                  <TableCell $minWidth={headers[2].minWidth} $width={headers[3].width} $padding="16px 0">
+                    <TableText>{product.quantity}</TableText>
+                  </TableCell>
+                  <TableCell $minWidth={headers[3].minWidth} $width={headers[3].width} $padding="16px 0">
+                    <TableText>{numberFormatter(product.price * product.quantity)}</TableText>
+                  </TableCell>
+                  <TableCell $minWidth={headers[4].minWidth} $width={headers[4].width} $padding="16px 0">
+                    <TableText>{'-'}</TableText>
+                  </TableCell>
+                </CartTableRow>
+              ))}
+            </OrderWrap>
           ))
         ) : (
           <NoResults>주문 내역이 없습니다</NoResults>
@@ -98,4 +118,12 @@ export default OrderListTable;
 const Wrapper = styled.div`
   border-top: 2px solid ${theme.colors.blackColor};
   border-bottom: 2px solid ${theme.colors.blackColor};
+`;
+const OrderWrap = styled.div`
+  /* border-top: 2px solid ${theme.colors.blackColor}; */
+  border-bottom: 1px solid ${theme.colors.blackColor};
+
+  &:last-child {
+    border-bottom: none;
+  }
 `;

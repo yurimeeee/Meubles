@@ -163,7 +163,6 @@ export default function CartPage() {
   //     }))
   //   );
 
-  //   console.log('checkedList', checkedList);
   //   setAllItemsChecked(!allItemsChecked);
   // };
 
@@ -178,8 +177,7 @@ export default function CartPage() {
   const onChangeQuantity = useCallback(async (itemId: string, newQuantity: number) => {
     const collectionRef = collection(db, `cart/${auth?.currentUser?.uid}/items`); // <-- Correct usage
     // const docRef = doc(collectionRef, itemId);
-    console.log('collectionRef', collectionRef);
-    // console.log('docRef', docRef);
+
     // await updateDoc(docRef, {
     //   quantity: newQuantity,
     // });

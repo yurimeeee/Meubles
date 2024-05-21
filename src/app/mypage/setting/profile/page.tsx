@@ -56,10 +56,7 @@ export default function MypageSettingProfile() {
 
       getDoc(userRef).then((doc) => {
         if (doc.exists()) {
-          console.log('Document data:', doc.data());
           setMyInfo(doc.data());
-        } else {
-          console.log('No such document!');
         }
       });
     } catch (error) {

@@ -30,6 +30,25 @@ export const TableRow = styled.div<{ $disabled?: boolean; $height?: number }>`
       }
     `};
 `;
+export const CartTableRow = styled.div<{ $disabled?: boolean; $height?: number }>`
+  /* height: 50px; */
+  height: ${({ $height }) => $height ? `${$height}px` : '50px'};
+  max-width: 1280px;
+  /* min-width: 1080px; */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  ${({ $disabled }) =>
+    $disabled &&
+    css`
+      & * {
+        color: ${theme.colors.lightGrayFontColor};
+      }
+    `};
+`;
+
+
 export const TableCell = styled.div<{
   $minWidth?: number;
   $width: number;
@@ -39,7 +58,7 @@ export const TableCell = styled.div<{
   $padding?: string;
 }>`
   min-width: ${({ $minWidth }) => $minWidth ? `${$minWidth}px` : 'auto'};
-  /* flex: ${({ $minWidth }) => ($minWidth ? 0 : 1)}; */
+  flex: ${({ $minWidth }) => ($minWidth ? 0 : 1)};
   width: ${({ $width }) => $width}%;
   height: 100%;
   font-family: 'AppleSDGothicNeoRegular';
@@ -95,3 +114,4 @@ export const ProductName = styled(MediumFont)`
   font-size: 14px;
   white-space: pre-wrap;
 `;
+
